@@ -10,77 +10,92 @@ const GLib = imports.gi.GLib;
 const WebKit = imports.gi.WebKit2;
 const Lang = imports.lang;
 
-// Spawn a web server
-
-var argv = [ "/usr/bin/nodejs", "./epub.js/server.js" ];
-
-var pid = "";
-let out, err;
-let ret = GLib.spawn_async_with_pipes(null, argv, null,
-                       GLib.SpawnFlags.DO_NOT_REAP_CHILD, null,
-                       null, pid, null, out, err);
-if(!ret)
-{
-	printf("Error spawning the process!\n");
+function Demo() {
+    this._init();
 }
-/*
-GLib.child_watch_add(pid, function(pid_new, status, user_data) {
-	GLib.spawn_close_pid(pid_new);
-}, null);
-*/
 
-Gtk.init(null);
- 
-let win = new Gtk.Window();
-win.set_title('GNOME Books');
-win.connect("delete-event", function() { 
-    Gtk.main_quit();
-});
+Demo.prototype = {
 
-// Fullscreen mode
-let isFullscreen = false;
-let accel_group = new Gtk.AccelGroup();
-accel_group.connect(Gdk.KEY_F11, 0, Gtk.AccelFlags.VISIBLE, function() {
-    if(isFullscreen)
-        win.unfullscreen();
-    else
-        win.fullscreen();
-    isFullscreen = !isFullscreen;
-});
-win.add_accel_group(accel_group);
+  _init: function () {
+    this.setupWindow ();
+    this.setupServer ();
+  },
 
-let sw = new Gtk.ScrolledWindow({});
-win.add(sw);
+  setupWindow: function() {
+    let win = new Gtk.Window();
+    win.set_title('GNOME Books');
+    win.connect("delete-event", function() { 
+        Gtk.main_quit();
+    });
 
-// WebKit preview
-let start_uri = "http://localhost:8080/examples/pagination.html"; 
-let view = new WebKit.WebView();
+    // Fullscreen mode
+    let isFullscreen = false;
+    let accel_group = new Gtk.AccelGroup();
+    accel_group.connect(Gdk.KEY_F11, 0, Gtk.AccelFlags.VISIBLE, function() {
+        if(isFullscreen)
+            win.unfullscreen();
+        else
+            win.fullscreen();
+        isFullscreen = !isFullscreen;
+    });
+    win.add_accel_group(accel_group);
 
-view.connect('close', function() {
-    win.destroy();
-});
+    let sw = new Gtk.ScrolledWindow({});
+    win.add(sw);
 
-view.load_uri(start_uri);
-sw.add(view);
+    // WebKit preview
+    let start_uri = "http://localhost:8080/examples/pagination.html"; 
+    let view = new WebKit.WebView();
 
-view.grab_focus();
+    view.connect('close', function() {
+        win.destroy();
+    });
 
-// Settings
-let s = view.get_settings();
-s.enable_javascript = true;
-s.auto_load_images = true;         // Temporary
-s.enable_fullscreen = true;
-s.enable_developer_extras = true;
-s.enable_xss_auditor = false;
-view.set_settings(s);
+    view.load_uri(start_uri);
+    sw.add(view);
 
-// view.get_inspector().show();
-view.get_inspector().connect('attach', function(ins, data) { 
-    win.set_size_request(1340, 768 + ins.get_attached_height());
-});
+    view.grab_focus();
 
-win.set_size_request(1340, 768);
-win.set_position(Gtk.WindowPosition.CENTER);
-win.show_all();
- 
-Gtk.main();
+    // view.get_inspector().show();
+    view.get_inspector().connect('attach', function(ins, data) { 
+        win.set_size_request(1340, 768 + ins.get_attached_height());
+    });
+
+    // Settings
+    let s = view.get_settings();
+    s.enable_javascript = true;
+    s.auto_load_images = true;         // Temporary
+    s.enable_fullscreen = true;
+    s.enable_developer_extras = true;
+    s.enable_xss_auditor = false;
+    view.set_settings(s);
+
+    win.set_size_request(1340, 768);
+    win.set_position(Gtk.WindowPosition.CENTER);
+    win.show_all();
+  },
+
+  setupServer: function() {
+    // Spawn a web server
+    var argv = [ "/usr/bin/nodejs", "./epub.js/server.js" ];
+
+    var pid = "";
+    let out, err;
+    let ret = GLib.spawn_async_with_pipes(null, argv, null,
+                           GLib.SpawnFlags.DO_NOT_REAP_CHILD, null,
+                           null, pid, null, out, err);
+    if(!ret)
+    {
+        printf("Error spawning the process!\n");
+    }
+    /*
+    GLib.child_watch_add(pid, function(pid_new, status, user_data) {
+        GLib.spawn_close_pid(pid_new);
+    }, null);
+    */  
+  }
+}
+
+Gtk.init (null, null);
+var demo = new Demo ();
+Gtk.main ();
