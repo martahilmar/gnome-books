@@ -16,6 +16,7 @@
 #ifndef __GB_WEBVIEW_H__
 #define __GB_WEBVIEW_H__
 
+#include <gtk/gtk.h>
 #include <glib.h>
 #include <glib-object.h>
 #include <webkit2/webkit2.h>
@@ -34,19 +35,20 @@ typedef struct _GbWebViewPrivate	GbWebViewPrivate;
 #define GB_WEBVIEW_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GB_WEBVIEW_TYPE, GbWebViewClass))
 
 struct _GbWebView {
-	WebKitWebView 		base_instace;
+	GtkWidget 			base_instace;
 
     GbWebViewPrivate*	priv;
 };
 
 struct _GbWebViewClass {
-    GObjectClass parent_class;
+    GtkWidgetClass		parent_class;
 };
 
 GType			gb_webview_get_type		(void) G_GNUC_CONST;
 
 GtkWidget*		gb_webview_new			(void);
-void			gb_webview_registerURI	(GbWebView *self);
+WebKitWebView*	gb_webview_get_view		(GbWebView* self);
+void			gb_webview_register_URI	(GbWebView* self);
 
 G_END_DECLS
 

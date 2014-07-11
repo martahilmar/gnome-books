@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <gtk/gtk.h>
+
 #include <webkit2/webkit2.h>
 #include <JavaScriptCore/JavaScript.h>
 #include <JavaScriptCore/JSStringRef.h>
@@ -43,6 +44,22 @@ enum
     PROP_WEBVIEW
 };
 
+
+static void
+load_book (WebKitWebView* webView)
+{
+    gchar *load_command = g_strdup_printf ("var Book = ePub('/epub.js/reader/moby-dick/', { width: 1076, height: 588 });");
+    webkit_web_view_run_javascript (webView, load_command, NULL, NULL, NULL);
+    g_free(load_command);
+}
+
+static void
+render_book (WebKitWebView* webView)
+{
+    gchar *render_command = g_strdup_printf ("var rendered = Book.renderTo('area').then(function(){});");
+    webkit_web_view_run_javascript (webView, render_command, NULL, NULL, NULL);
+    g_free(render_command);
+}
 
 void
 gb_webkit_load_changed (WebKitWebView  *web_view,
@@ -71,6 +88,8 @@ gb_webkit_load_changed (WebKitWebView  *web_view,
     case WEBKIT_LOAD_FINISHED:
         /* Load finished, we can now stop the spinner */
         printf("webkit_load_finished: '%s' \n", uri);
+        //load_book(web_view);
+        //render_book(web_view);
         break;
     }
 }
@@ -112,11 +131,10 @@ gb_request_cb (WebKitURISchemeRequest *request,
     GFile *file = NULL;
     GError *error = NULL;
 
-    //printf("Path: %s \n", path);
+    printf("Path: %s \n", path);
 
     if (!path || path[0] == '\0') {
-        file = g_file_new_for_path ("epub.js/examples/single.html");
-        //file = g_file_new_for_uri ("resources:///gnome-books/epub/examples/single.html");
+        file = g_file_new_for_path ("epub.js/examples/single1.html");
     } else {
         gchar *dir = g_get_current_dir ();
         gchar *fn = g_build_filename (dir, path, NULL);
@@ -214,17 +232,16 @@ gb_webview_class_init (GbWebViewClass *class)
 }
 
 static void
-gb_webview_init (GbWebView *self)
+gb_webview_init (GbWebView* self)
 {
     GbWebViewPrivate*   priv;
-    WebKitWebView*      webView;
 
     self->priv = GB_WEBVIEW_GET_PRIVATE (self);
     priv = self->priv;
 
-    webView = WEBKIT_WEB_VIEW(webkit_web_view_new());
+    priv->webView = WEBKIT_WEB_VIEW(webkit_web_view_new());
 
-    WebKitSettings *s = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(webView));
+    WebKitSettings *s = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(priv->webView));
     
     webkit_settings_set_enable_write_console_messages_to_stdout(s, TRUE);
     webkit_settings_set_enable_fullscreen(s, TRUE);
@@ -237,24 +254,30 @@ gb_webview_init (GbWebView *self)
                              "enable-write-console-messages-to-stdout", TRUE, NULL);
     // g_object_set(G_OBJECT(s),"auto-load-images", FALSE, NULL); // We only load the current pages +-1
 
-    webkit_web_view_set_settings(WEBKIT_WEB_VIEW(webView), s);
+    webkit_web_view_set_settings(WEBKIT_WEB_VIEW(priv->webView), s);
 
     //g_signal_connect(mainWindow, "destroy", G_CALLBACK(gb_destroy_windowCb), NULL);
     //g_signal_connect(webView, "close", G_CALLBACK(gb_close_WebViewCb), mainWindow);
-    g_signal_connect(webView, "load-changed", G_CALLBACK(gb_webkit_load_changed), NULL);
-    g_signal_connect(webView, "load-failed", G_CALLBACK(gb_webkit_load_failed), NULL);
-    g_signal_connect(webView, "web-process-crashed", G_CALLBACK(gb_webkit_process_crashed), NULL);
-    g_signal_connect(webView, "insecure-content-detected", G_CALLBACK(gb_webkit_insecure_content_detected), NULL);
+    g_signal_connect(priv->webView, "load-changed", G_CALLBACK(gb_webkit_load_changed), NULL);
+    g_signal_connect(priv->webView, "load-failed", G_CALLBACK(gb_webkit_load_failed), NULL);
+    g_signal_connect(priv->webView, "web-process-crashed", G_CALLBACK(gb_webkit_process_crashed), NULL);
+    g_signal_connect(priv->webView, "insecure-content-detected", G_CALLBACK(gb_webkit_insecure_content_detected), NULL);
 
     // Make sure that when the browser area becomes visible, it will get mouse
     // and keyboard events
-    gtk_widget_grab_focus(GTK_WIDGET(webView));
+    gtk_widget_grab_focus(GTK_WIDGET(priv->webView));
+}
 
-    priv->webView = webView;
+WebKitWebView*      
+gb_webview_get_view (GbWebView *self)
+{
+    g_return_val_if_fail (GB_IS_WEBVIEW (self), NULL);
+
+    return self->priv->webView;
 }
 
 void
-gb_webview_registerURI  (GbWebView *self)
+gb_webview_register_URI (GbWebView *self)
 {
     WebKitWebView *webView;
 
@@ -272,7 +295,7 @@ gb_webview_finalize (GObject *object)
     G_OBJECT_CLASS (gb_webview_parent_class)->finalize (object);
 }*/
 
-GtkWidget *
+GtkWidget*
 gb_webview_new ()
 {
     GObject *self;

@@ -9,19 +9,13 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
 
                 
-        <!-- EPUBJS Renderer 
-        <script src="file:///home/marta/Dropbox/GSoC/gnome-books-v0.3/build/epub.min.js"></script>
-        -->
-
+        <!-- EPUBJS Renderer -->
         <script src='book:epub.js/build/epub.js'></script>
-        <script src='book:epub.js/build/libs/zip.min.js'></script>
   
         <link rel="stylesheet" href="book:epub.js/examples/basic.css">
-        <script>
-          EPUBJS.filePath = "../build/libs/";
-        </script>
 
         <style type="text/css">
+
           body {
             overflow: auto;
             background: #eee;
@@ -46,14 +40,37 @@
             box-shadow:           inset 10px 0 20px rgba(0,0,0,.1);
             padding: 40px 40px;
           }
+
+         
         </style>
+        
+         <script>
+            "use strict";
+            
+            var Book = ePub("/epub.js/reader/moby-dick/", {
+              width: 400,
+              height: 600,
+              spreads : false
+            });
+            
+
+        </script>
     </head>
     <body>
-        <div id="main">        
+        <div id="main">
+          <div id="prev" onclick="Book.prevPage();" class="arrow">‹</div>
           <div id="wrapper">
             <div id="area"></div>
-            <div id="next" onclick="book.nextPage();"class="arrow">›</div>            
           </div>
+          <div id="next" onclick="Book.nextPage();"class="arrow">›</div>
         </div>
+
+        <script>            
+            
+            Book.renderTo("area").then(function(){
+              //Book.setStyle("width", "400px");
+            });
+
+        </script>
     </body>
 </html>

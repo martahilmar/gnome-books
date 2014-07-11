@@ -46,11 +46,10 @@ Demo.prototype = {
     // WebKit preview
     //let start_uri = "http://localhost:8080/examples/pagination.html"; 
     this.web_view = new Gb.WebView();
-    sw.add(this.web_view);
-    this.web_view.registerURI();
+    this.web_view.register_URI();
 
-    //let view = WebKit.WebView(this.web_view);
-/*
+    let view = this.web_view.get_view();
+    
     view.connect('close', function() {
         win.destroy();
     });
@@ -73,7 +72,7 @@ Demo.prototype = {
     s.enable_developer_extras = true;
     s.enable_xss_auditor = false;
     view.set_settings(s);
-*/
+
     win.set_size_request(1340, 768);
     win.set_position(Gtk.WindowPosition.CENTER);
     win.show_all();
