@@ -9,6 +9,7 @@ const Gdk = imports.gi.Gdk;
 const GLib = imports.gi.GLib;
 const WebKit = imports.gi.WebKit2;
 const Lang = imports.lang;
+const Gb = imports.gi.Gb;
 
 function Demo() {
     this._init();
@@ -18,7 +19,6 @@ Demo.prototype = {
 
   _init: function () {
     this.setupWindow ();
-    this.setupServer ();
   },
 
   setupWindow: function() {
@@ -44,14 +44,18 @@ Demo.prototype = {
     win.add(sw);
 
     // WebKit preview
-    let start_uri = "http://localhost:8080/examples/pagination.html"; 
-    let view = new WebKit.WebView();
+    //let start_uri = "http://localhost:8080/examples/pagination.html"; 
+    this.web_view = new Gb.WebView();
+    sw.add(this.web_view);
+    this.web_view.registerURI();
 
+    //let view = WebKit.WebView(this.web_view);
+/*
     view.connect('close', function() {
         win.destroy();
     });
 
-    view.load_uri(start_uri);
+    //view.load_uri(start_uri);
     sw.add(view);
 
     view.grab_focus();
@@ -69,30 +73,10 @@ Demo.prototype = {
     s.enable_developer_extras = true;
     s.enable_xss_auditor = false;
     view.set_settings(s);
-
+*/
     win.set_size_request(1340, 768);
     win.set_position(Gtk.WindowPosition.CENTER);
     win.show_all();
-  },
-
-  setupServer: function() {
-    // Spawn a web server
-    var argv = [ "/usr/bin/nodejs", "./epub.js/server.js" ];
-
-    var pid = "";
-    let out, err;
-    let ret = GLib.spawn_async_with_pipes(null, argv, null,
-                           GLib.SpawnFlags.DO_NOT_REAP_CHILD, null,
-                           null, pid, null, out, err);
-    if(!ret)
-    {
-        printf("Error spawning the process!\n");
-    }
-    /*
-    GLib.child_watch_add(pid, function(pid_new, status, user_data) {
-        GLib.spawn_close_pid(pid_new);
-    }, null);
-    */  
   }
 }
 
