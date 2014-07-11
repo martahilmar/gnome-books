@@ -1,5 +1,5 @@
 # GNOME Books
-=============
+
 Google Summer of Code project for GNOME
 
 gnome-books is application for listing, searching and reading eBooks.
