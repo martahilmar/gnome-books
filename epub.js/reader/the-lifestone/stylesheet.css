@@ -1,0 +1,341 @@
+@namespace h "http://www.w3.org/1999/xhtml";
+.SWsoftchapter {
+    color: #000;
+    direction: ltr;
+    display: none;
+    margin-bottom: 0.08in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    text-indent: 0.3in
+    }
+.c {
+    display: block;
+    font-size: 1.125em;
+    font-weight: bold;
+    margin-bottom: 0.14in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0.14in;
+    text-align: center;
+    text-indent: 0
+    }
+.c1 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.08in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0.08in;
+    text-align: center;
+    text-indent: 0
+    }
+.c10 {
+    font-weight: bold;
+    text-decoration: underline
+    }
+.c11 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0.08in;
+    text-align: center;
+    text-indent: 0
+    }
+.c12 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.08in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    text-align: center;
+    text-indent: 0
+    }
+.c13 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    margin-bottom: 0.08in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0.08in;
+    page-break-before: always;
+    text-align: left;
+    text-indent: 0
+    }
+.c14 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    margin-bottom: 0.14in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0.14in;
+    text-align: center;
+    text-indent: 0
+    }
+.c15 {
+    font-size: 1.125em;
+    font-weight: bold
+    }
+.c16 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.08in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    text-indent: 0
+    }
+.c17 {
+    color: #00F;
+    text-decoration: underline
+    }
+.c18 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.08in;
+    margin-left: 0.2in;
+    margin-right: 0;
+    margin-top: 0;
+    text-indent: 0
+    }
+.c19 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    margin-bottom: 0.08in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    text-align: center;
+    text-indent: 0
+    }
+.c2 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    margin-bottom: 0.08in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0.08in;
+    text-align: center;
+    text-indent: 0
+    }
+.c20 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    margin-bottom: 0.08in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0.08in;
+    text-indent: 0
+    }
+.c21 {
+    display: block;
+    font-size: 1.125em;
+    font-weight: bold;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0.08in;
+    text-align: center;
+    text-indent: 0
+    }
+.c22 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.08in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0.08in;
+    text-indent: 0
+    }
+.c23 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    text-align: center;
+    text-indent: 0
+    }
+.c3 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    margin-bottom: 0.13in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    page-break-before: always;
+    text-align: center;
+    text-indent: 0
+    }
+.c4 {
+    font-size: 1.41667em;
+    font-weight: bold
+    }
+.c5 {
+    color: #333;
+    font-family: Arial, sans-serif;
+    font-size: 1.41667em;
+    font-weight: bold
+    }
+.c6 {
+    color: #333;
+    direction: ltr;
+    display: block;
+    margin-bottom: 0.13in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    text-align: center;
+    text-indent: 0
+    }
+.c7 {
+    font-family: Arial, sans-serif;
+    font-size: 1.125em
+    }
+.c8 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    margin-bottom: 0.13in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    text-align: center;
+    text-indent: 0
+    }
+.c9 {
+    color: #333;
+    font-family: Arial, sans-serif;
+    font-size: 1.125em
+    }
+.calibre {
+    color: #000;
+    display: block;
+    font-size: 1em;
+    margin-bottom: 0;
+    margin-left: 5pt;
+    margin-right: 5pt;
+    margin-top: 0;
+    page-break-before: always;
+    text-align: justify
+    }
+.calibre1 {
+    display: block
+    }
+.calibre2 {
+    font-weight: bolder
+    }
+.western {
+    color: #000;
+    direction: ltr;
+    display: block;
+    font-family: "Times New Roman", serif;
+    font-size: 1em;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    so-language: en-US;
+    text-indent: 0.3in
+    }
+.western1 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    font-family: "Times New Roman", serif;
+    font-size: 1em;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    so-language: en-US;
+    text-align: center;
+    text-indent: 0
+    }
+.western2 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    font-family: "Times New Roman", serif;
+    font-size: 1em;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    page-break-before: always;
+    so-language: en-US;
+    text-indent: 0
+    }
+.western3 {
+    color: #000;
+    display: block;
+    font-family: "Times New Roman", serif;
+    font-size: 1.125em;
+    font-weight: bold;
+    margin-bottom: 0.14in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    page-break-before: always;
+    text-align: center
+    }
+.western4 {
+    color: #000;
+    display: block;
+    font-family: "Times New Roman", serif;
+    font-size: 1.125em;
+    font-weight: bold;
+    margin-bottom: 0.14in;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    page-break-before: always;
+    text-align: left
+    }
+.western5 {
+    color: #000;
+    direction: ltr;
+    display: block;
+    font-family: "Times New Roman", serif;
+    font-size: 1em;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    page-break-before: always;
+    so-language: en-US;
+    text-indent: 0.3in
+    }
+a {
+    color: inherit;
+    text-decoration: inherit;
+    cursor: default
+    }
+a[href] {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer
+    }
