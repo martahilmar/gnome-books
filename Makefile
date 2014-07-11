@@ -1,16 +1,3 @@
-#
-# GOBject Introspection Tutorial 
-# 
-# Written in 2013 by Simon Kågedal Reimer <skagedal@gmail.com>
-#
-# To the extent possible under law, the author have dedicated all
-# copyright and related and neighboring rights to this software to
-# the public domain worldwide. This software is distributed without
-# any warranty.
-#
-# CC0 Public Domain Dedication:
-# http://creativecommons.org/publicdomain/zero/1.0/
-
 CC=gcc
 C_INCLUDES=`pkg-config --cflags gobject-2.0 webkit2gtk-3.0`
 CFLAGS=$(C_INCLUDES) -g
@@ -37,7 +24,14 @@ $(TYPELIB_FILE): $(GIR_FILE)
 	g-ir-compiler $(GIR_FILE) --output=$(TYPELIB_FILE)
 
 $(GIR_FILE): gb-webview.c gb-webview.h
-	libtool exec g-ir-scanner $^ --library=gbWebView $(C_INCLUDES) --include=GObject-2.0 --namespace=$(NAMESPACE) --nsversion=$(NSVERSION) --output=$@
+	libtool exec g-ir-scanner $^ --warn-all \
+		--library=gbWebView \
+		--cflags-begin $(C_INCLUDES) \
+        --cflags-end $(LIBS) \
+		--include=GObject-2.0 --include=WebKit2-3.0 --include=Gtk-3.0 \
+		--namespace=$(NAMESPACE) \
+		--nsversion=$(NSVERSION) \
+		--output=$@
 
 gbWebView.lo: gb-webview.c gb-webview.h
 	libtool compile $(CC) $(CFLAGS) -c $< -o $@
@@ -46,5 +40,3 @@ clean:
 	-rm *.lo libgbWebView.la $(TYPELIB_FILE) $(GIR_FILE)
 	-rm *.o
 	-rm -rf .libs
-
-
