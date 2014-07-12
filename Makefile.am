@@ -1,6 +1,7 @@
-ACLOCAL_AMFLAGS = -I build/autotools
+ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
-SUBDIRS=lib
+EXTRA_DIST = m4/introspection.m4
+SUBDIRS=lib m4
 
 stale-files-clean-local:
 	-$(RM) $(abs_top_builddir)/*.la $(abs_top_builddir)/*.gir $(abs_top_builddir)/*.typelib

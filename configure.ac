@@ -1,11 +1,14 @@
+dnl -*- mode: m4 -*-
 AC_PREREQ(2.69)
 
 AC_INIT([gnome-books], [1.0.0], [], [gnome-books])
 
+AM_MAINTAINER_MODE([enable])
+
 AC_CONFIG_HEADER([config/config.h])
 AC_CONFIG_SRCDIR([gnome-books.js])
-AC_CONFIG_MACRO_DIR([build/autotools])
-AC_CONFIG_AUX_DIR([build])
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_AUX_DIR([config])
 
 GOBJECT_INTROSPECTION_REQUIRE([0.9.6])
 
@@ -27,7 +30,7 @@ GOBJECT_INTROSPECTION_MIN_VERSION=1.31.6
 # Define the GOBJECT_CFLAGS and GOBJECT_LIBS variables which are useful
 # in the Makefile.am files
 PKG_CHECK_MODULES(BOOKS,
-                  webkitgtk-3.0 >= $WEBKITGTK_MIN_VERSION
+                  webkit2gtk-3.0 >= $WEBKITGTK_MIN_VERSION
                   gjs-1.0
                   glib-2.0 >= $GLIB_MIN_VERSION
                   gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_MIN_VERSION
@@ -36,7 +39,7 @@ PKG_CHECK_MODULES(BOOKS,
 # Checks for typedefs, structures, and compiler characteristics
 
 # Adds the latest standard flag (e.g. std=gnu99) to the compiler flags
-AC_PROG_CC_STDC
+# AC_PROG_CC_STDC
 
 # Compiler flags (you might need to do some checks and set these conditionally)
 GB_CFLAGS="-Wall"
@@ -55,7 +58,10 @@ AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
 AC_SUBST(GB_CFLAGS)
 
 # You should generally have one entry here for each Makefile.am
-AC_CONFIG_FILES([Makefile lib/Makefile])
+AC_CONFIG_FILES([
+Makefile 
+lib/Makefile
+])
 
 AC_OUTPUT
 
