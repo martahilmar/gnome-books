@@ -46,10 +46,17 @@ struct _GbWebViewClass {
 
 GType			gb_webview_get_type		(void) G_GNUC_CONST;
 
-GtkWidget*		gb_webview_new			(void);
+WebKitWebView*	gb_webview_new			(void);
 WebKitWebView*	gb_webview_get_view		(GbWebView* self);
 void			gb_webview_register_URI	(GbWebView* self);
-
+/*void            gb_webview_register_URI (GbWebView *self,
+				                         GCancellable* cancellable,
+				                         GAsyncReadyCallback callback);*/
+void			gb_webview_run_JS		(GbWebView *self, gchar* load_command);
+/*void			gb_webview_load_book 	(GbWebView* self,
+					                     const gchar* uri,
+					                     GCancellable* cancellable,
+					                     GAsyncReadyCallback callback);*/
 G_END_DECLS
 
 #endif /* __GB_WEBVIEW_H__ */

@@ -26,8 +26,6 @@ $(TYPELIB_FILE): $(GIR_FILE)
 $(GIR_FILE): gb-webview.c gb-webview.h
 	libtool exec g-ir-scanner $^ --warn-all \
 		--library=gbWebView \
-		--cflags-begin $(C_INCLUDES) \
-        --cflags-end $(LIBS) \
 		--include=GObject-2.0 --include=WebKit2-3.0 --include=Gtk-3.0 \
 		--namespace=$(NAMESPACE) \
 		--nsversion=$(NSVERSION) \
