@@ -1,75 +1,61 @@
-dnl -*- mode: m4 -*-
 AC_PREREQ(2.69)
 
-AC_INIT([gnome-books], [1.0.0], [], [gnome-books])
+AC_INIT([Books], [1.0.0], [])
 
-AM_MAINTAINER_MODE([enable])
-
-AC_CONFIG_HEADER([config/config.h])
-AC_CONFIG_SRCDIR([gnome-books.js])
-AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([config])
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_SRCDIR([lib])
+AC_CONFIG_HEADER([config.h])
 
 GOBJECT_INTROSPECTION_REQUIRE([0.9.6])
 
-## don't rerun to this point if we abort
-AC_CACHE_SAVE
-
-# Checks for programs
-
 AC_PROG_CC
-AC_PROG_INSTALL
+AM_PROG_CC_C_O
+AC_PROG_CXX
+AC_ISC_POSIX
+AC_HEADER_STDC
 
-# Checks for libraries
-
-WEBKITGTK_MIN_VERSION=1.10.0
+WEBKIT2GTK_MIN_VERSION=1.10.0
 GLIB_MIN_VERSION=2.39.3
 GTK_MIN_VERSION=3.10.8
 GOBJECT_INTROSPECTION_MIN_VERSION=1.31.6
 
-# Define the GOBJECT_CFLAGS and GOBJECT_LIBS variables which are useful
-# in the Makefile.am files
-PKG_CHECK_MODULES(BOOKS,
-                  webkit2gtk-3.0 >= $WEBKITGTK_MIN_VERSION
-                  gjs-1.0
-                  glib-2.0 >= $GLIB_MIN_VERSION
-                  gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_MIN_VERSION
-                  gtk+-3.0 >= $GTK_MIN_VERSION)
+PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= $GTK_MIN_VERSION])
+PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-3.0 >= $WEBKIT2GTK_MIN_VERSION])
+PKG_CHECK_MODULES([GOBJECT_INTROSPECTION], [gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_MIN_VERSION])
 
-# Checks for typedefs, structures, and compiler characteristics
+AC_PROG_CC_STDC
 
-# Adds the latest standard flag (e.g. std=gnu99) to the compiler flags
-# AC_PROG_CC_STDC
-
-# Compiler flags (you might need to do some checks and set these conditionally)
-GB_CFLAGS="-Wall"
+BOOKS_CFLAGS="-Wall"
 
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 # library-specific macros
 AM_PROG_AR
 LT_INIT
-AC_CHECK_FUNCS([atexit])
-AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
 
-# Output
+GJS_CONSOLE=`$PKG_CONFIG --variable=gjs_console gjs-1.0`
+AC_SUBST(GJS_CONSOLE)
 
-# Exposes the GB_CFLAGS variable to the Makefile.am files.
-AC_SUBST(GB_CFLAGS)
+# Introspection
+GOBJECT_INTROSPECTION_CHECK([1.38.0])
 
-# You should generally have one entry here for each Makefile.am
+AC_SUBST(BOOKS_CFLAGS)
+
 AC_CONFIG_FILES([
-Makefile 
-lib/Makefile
+	Makefile 
+	lib/Makefile
 ])
 
 AC_OUTPUT
 
 dnl ==========================================================================
 echo "
-        gnome-books $VERSION
+
+        gnome-documents $VERSION
         ==================
 
         prefix:    ${prefix}
         compiler:  ${CC}
+
 "

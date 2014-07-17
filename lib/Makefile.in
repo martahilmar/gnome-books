@@ -81,19 +81,20 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS =
-@HAVE_INTROSPECTION_TRUE@am__append_1 = $(gir_DATA) $(typelib_DATA)
+@HAVE_INTROSPECTION_TRUE@am__append_1 = Gb-1.0.gir
+@HAVE_INTROSPECTION_TRUE@am__append_2 = $(gir_DATA) $(typelib_DATA)
 subdir = lib
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/config/depcomp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/introspection.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/config/config.h
+CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -126,16 +127,20 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(girdir)" "$(DESTDIR)$(typelibdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libgbWebView_1_0_la_DEPENDENCIES =
+libgb_1_0_la_DEPENDENCIES = $(top_builddir)/lib/libgb.la
 am__objects_1 =
-am__objects_2 = gb-webview.lo gb-resources.lo $(am__objects_1)
+am__objects_2 = libgb_1_0_la-gb-webview.lo \
+	libgb_1_0_la-gb-resources.lo $(am__objects_1)
 am__objects_3 = $(am__objects_1)
-am_libgbWebView_1_0_la_OBJECTS = $(am__objects_2) $(am__objects_3)
-libgbWebView_1_0_la_OBJECTS = $(am_libgbWebView_1_0_la_OBJECTS)
+am_libgb_1_0_la_OBJECTS = $(am__objects_2) $(am__objects_3)
+libgb_1_0_la_OBJECTS = $(am_libgb_1_0_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+libgb_1_0_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(libgb_1_0_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -149,7 +154,7 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/config
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
@@ -171,8 +176,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libgbWebView_1_0_la_SOURCES)
-DIST_SOURCES = $(libgbWebView_1_0_la_SOURCES)
+SOURCES = $(libgb_1_0_la_SOURCES)
+DIST_SOURCES = $(libgb_1_0_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -208,12 +213,15 @@ AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 BOOKS_CFLAGS = @BOOKS_CFLAGS@
-BOOKS_LIBS = @BOOKS_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -226,8 +234,12 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
-GB_CFLAGS = @GB_CFLAGS@
+GJS_CONSOLE = @GJS_CONSOLE@
+GOBJECT_INTROSPECTION_CFLAGS = @GOBJECT_INTROSPECTION_CFLAGS@
+GOBJECT_INTROSPECTION_LIBS = @GOBJECT_INTROSPECTION_LIBS@
 GREP = @GREP@
+GTK_CFLAGS = @GTK_CFLAGS@
+GTK_LIBS = @GTK_LIBS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -249,7 +261,6 @@ LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
-MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
@@ -276,12 +287,15 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
+WEBKIT_CFLAGS = @WEBKIT_CFLAGS@
+WEBKIT_LIBS = @WEBKIT_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
@@ -328,55 +342,54 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+AM_CPPFLAGS = \
+    -I$(top_builddir)/config \
+    -I$(top_srcdir) \
+    -L$(top_srcdir)/
+
 
 # preamble
 NULL = 
-
-# C Preprocessor flags - GOBJECT_CFLAGS was defined by PKG_CHECK_MODULES
-AM_CPPFLAGS = -I$(top_builddir)/config -I$(top_srcdir) \
-	$(GOBJECT_CFLAGS) $(NULL)
 BUILT_SOURCES = 
-CLEANFILES = $(am__append_1)
+CLEANFILES = $(am__append_2)
 EXTRA_DIST = 
 DISTCLEANFILES = 
 
-# Defines the actual library to build.
-lib_LTLIBRARIES = libgbWebView-1.0.la
+# This defines the actual library to build.
+lib_LTLIBRARIES = libgb-1.0.la
+gb_cflags = \
+    -I$(top_srcdir) \
+    -I$(top_srcdir)/lib
 
-# Define source C and header files. Note that a few variables have been defined
-# for you such as `top_srcdir` and `srcdir` which are convenient to use.
-source_h = \
+gb_source_h = \
   $(top_srcdir)/lib/gb-webview.h \
   $(NULL)
 
-source_c = \
+gb_source_c = \
   gb-webview.c \
   gb-resources.c \
   $(NULL)
 
+libgb_1_0_la_LIBADD = $(top_builddir)/lib/libgb.la
+libgb_1_0_la_LDFLAGS = -avoid-version
+libgb_1_0_la_CPPFLAGS = $(gb_cflags)
+libgb_1_0_la_SOURCES = $(gb_source_c) $(gb_source_h)
+INTROSPECTION_GIRS = Gb_1_0_gir $(am__append_1)
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all
+INTROSPECTION_COMPILER_ARGS = 
+@HAVE_INTROSPECTION_TRUE@introspection_sources = $(libgb_1_0_la_SOURCES)
+@HAVE_INTROSPECTION_TRUE@Gb_1_0_gir_INCLUDES = \
+@HAVE_INTROSPECTION_TRUE@  GObject-2.0 \
+@HAVE_INTROSPECTION_TRUE@  Gtk-3.0 \
+@HAVE_INTROSPECTION_TRUE@  webkit2gtk-3.0
 
-# There are now several libgbWebView_1_0_la_* variables you can define to control
-# additional library objects to include, source files, linker objects, etc.
-# There is also a similar variable, bin_PROGRAMS, you can define here to define
-# any programs you want to build.
-libgbWebView_1_0_la_LIBADD = $(GOBJECT_LIBS)
-libgbWebView_1_0_la_SOURCES = $(source_c) $(source_h)
-
-# Make sure the name of your library matches the name you defined in
-# lib_LTLIBRARIES. Capitalization can be important in these steps.
-INTROSPECTION_GIRS = Gb_1_0_gir
-# These are flags to pass to g-ir-scanner and g-ir-compiler.
-INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir)
-INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
-@HAVE_INTROSPECTION_TRUE@introspection_sources = $(libgbWebView_1_0_la_SOURCES)
 @HAVE_INTROSPECTION_TRUE@Gb_1_0_gir_NAMESPACE = Gb
 @HAVE_INTROSPECTION_TRUE@Gb_1_0_gir_VERSION = 1.0
-@HAVE_INTROSPECTION_TRUE@Gb_1_0_gir_INCLUDES = GObject-2.0 WebKit2-3.0 Gtk-3.0
-@HAVE_INTROSPECTION_TRUE@Gb_1_0_gir_CFLAGS = $(AM_CPPFLAGS)
+@HAVE_INTROSPECTION_TRUE@Gb_1_0_gir_CFLAGS = $(AM_CPPFLAGS) $(gb_cflags)
+@HAVE_INTROSPECTION_TRUE@Gb_1_0_gir_SCANNERFLAGS = --warn-all --symbol-prefix=gd --identifier-prefix=Gb
 @HAVE_INTROSPECTION_TRUE@Gb_1_0_gir_PACKAGES = 
-@HAVE_INTROSPECTION_TRUE@Gb_1_0_gir_LIBS = libgbWebView-1.0.la
+@HAVE_INTROSPECTION_TRUE@Gb_1_0_gir_LIBS = libgb-1.0.la
 @HAVE_INTROSPECTION_TRUE@Gb_1_0_gir_FILES = $(introspection_sources)
-@HAVE_INTROSPECTION_TRUE@GdPrivate_1_0_gir_SCANNERFLAGS = --warn-all --symbol-prefix=gb --identifier-prefix=Gb
 @HAVE_INTROSPECTION_TRUE@girdir = $(datadir)/gir-1.0
 @HAVE_INTROSPECTION_TRUE@gir_DATA = $(INTROSPECTION_GIRS)
 @HAVE_INTROSPECTION_TRUE@typelibdir = $(libdir)/girepository-1.0
@@ -386,7 +399,7 @@ all: $(BUILT_SOURCES)
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -411,9 +424,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+$(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
@@ -452,8 +465,8 @@ clean-libLTLIBRARIES:
 	  rm -f $${locs}; \
 	}
 
-libgbWebView-1.0.la: $(libgbWebView_1_0_la_OBJECTS) $(libgbWebView_1_0_la_DEPENDENCIES) $(EXTRA_libgbWebView_1_0_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(LINK) -rpath $(libdir) $(libgbWebView_1_0_la_OBJECTS) $(libgbWebView_1_0_la_LIBADD) $(LIBS)
+libgb-1.0.la: $(libgb_1_0_la_OBJECTS) $(libgb_1_0_la_DEPENDENCIES) $(EXTRA_libgb_1_0_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libgb_1_0_la_LINK) -rpath $(libdir) $(libgb_1_0_la_OBJECTS) $(libgb_1_0_la_LIBADD) $(LIBS)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
@@ -510,8 +523,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gb-resources.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gb-webview.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgb_1_0_la-gb-resources.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgb_1_0_la-gb-webview.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -533,6 +546,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+libgb_1_0_la-gb-webview.lo: gb-webview.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgb_1_0_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libgb_1_0_la-gb-webview.lo -MD -MP -MF $(DEPDIR)/libgb_1_0_la-gb-webview.Tpo -c -o libgb_1_0_la-gb-webview.lo `test -f 'gb-webview.c' || echo '$(srcdir)/'`gb-webview.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgb_1_0_la-gb-webview.Tpo $(DEPDIR)/libgb_1_0_la-gb-webview.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gb-webview.c' object='libgb_1_0_la-gb-webview.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgb_1_0_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libgb_1_0_la-gb-webview.lo `test -f 'gb-webview.c' || echo '$(srcdir)/'`gb-webview.c
+
+libgb_1_0_la-gb-resources.lo: gb-resources.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgb_1_0_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libgb_1_0_la-gb-resources.lo -MD -MP -MF $(DEPDIR)/libgb_1_0_la-gb-resources.Tpo -c -o libgb_1_0_la-gb-resources.lo `test -f 'gb-resources.c' || echo '$(srcdir)/'`gb-resources.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgb_1_0_la-gb-resources.Tpo $(DEPDIR)/libgb_1_0_la-gb-resources.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gb-resources.c' object='libgb_1_0_la-gb-resources.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgb_1_0_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libgb_1_0_la-gb-resources.lo `test -f 'gb-resources.c' || echo '$(srcdir)/'`gb-resources.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -803,9 +830,7 @@ uninstall-am: uninstall-binPROGRAMS uninstall-girDATA \
 
 -include $(INTROSPECTION_MAKEFILE)
 
-# This step is fairly well documented in the Gnome wiki here:
-# https://wiki.gnome.org/Projects/GObjectIntrospection/AutotoolsIntegration
-@HAVE_INTROSPECTION_TRUE@Gb-1.0.gir: libgbWebView-1.0.la
+@HAVE_INTROSPECTION_TRUE@Gb-1.0.gir: libgb-1.0.la Makefile
 
 -include $(top_srcdir)/git.mk
 

@@ -1,13 +1,11 @@
-ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+ACLOCAL_AMFLAGS = -I m4 -I lib ${ACLOCAL_FLAGS}
 DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
-EXTRA_DIST = m4/introspection.m4
-SUBDIRS=lib m4
-
-stale-files-clean-local:
-	-$(RM) $(abs_top_builddir)/*.la $(abs_top_builddir)/*.gir $(abs_top_builddir)/*.typelib
+SUBDIRS=lib
 
 MAINTAINERCLEANFILES = \
+    $(srcdir)/AUTHORS \
     $(srcdir)/INSTALL \
+    $(srcdir)/ar-lib \
     $(srcdir)/aclocal.m4 \
     $(srcdir)/autoscan.log \
     $(srcdir)/compile \
@@ -15,7 +13,14 @@ MAINTAINERCLEANFILES = \
     $(srcdir)/config.h.in \
     $(srcdir)/config.sub \
     $(srcdir)/configure.scan \
+    $(srcdir)/depcomp \
     $(srcdir)/install-sh \
+    $(srcdir)/ltmain.sh \
+    $(srcdir)/missing \
+    $(srcdir)/mkinstalldirs \
+    $(srcdir)/omf.make \
+    $(srcdir)/xmldocs.make \
+    $(srcdir)/gtk-doc.make \
     $(NULL)
 
 GITIGNOREFILES = \
