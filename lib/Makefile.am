@@ -1,7 +1,13 @@
 AM_CPPFLAGS = \
-    -I$(top_builddir)/config \
-    -I$(top_srcdir) \
-    -L$(top_srcdir)/
+  -I$(top_builddir)/config  \
+  -I$(top_srcdir)           \
+  -L$(top_srcdir)/          \
+  $(GTK_DEBUG_FLAGS)        \
+  $(GTK_DEP_CFLAGS)
+
+AM_CFLAGS = $(DEPEND_CFLAGS) -Wall
+
+AM_LDFLAGS = $(DEPEND_LIBS)
 
 # preamble
 NULL =
@@ -12,17 +18,17 @@ DISTCLEANFILES =
 lib_LTLIBRARIES =
 bin_PROGRAMS =
 
-gb_cflags = \
-    -I$(top_srcdir) \
-    -I$(top_srcdir)/lib
+gb_cflags =             \
+  -I$(top_srcdir)       \
+  -I$(top_srcdir)/lib
 
-gb_source_h = \
+gb_source_h =                    \
   $(top_srcdir)/lib/gb-webview.h \
   $(NULL)
 
-gb_source_c = \
-  gb-webview.c \
-  gb-resources.c \
+gb_source_c =         \
+  gb-webview.c        \
+  gb-resources.c      \
   $(NULL)
 
 # This defines the actual library to build.
