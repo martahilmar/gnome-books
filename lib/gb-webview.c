@@ -27,8 +27,6 @@
 
 #include "gb-webview.h"
 
-//WebKitWebView *webView;
-
 #define GB_WEBVIEW_GET_PRIVATE(o)   \
     (G_TYPE_INSTANCE_GET_PRIVATE ((o), GB_WEBVIEW_TYPE, GbWebViewPrivate))
 
@@ -43,23 +41,6 @@ enum
     PROP_0,
     PROP_WEBVIEW
 };
-
-
-static void
-load_book (WebKitWebView* webView)
-{
-    gchar *load_command = g_strdup_printf ("var Book = ePub('/epub.js/reader/moby-dick/', { width: 1076, height: 588 });");
-    webkit_web_view_run_javascript (webView, load_command, NULL, NULL, NULL);
-    g_free(load_command);
-}
-
-static void
-render_book (WebKitWebView* webView)
-{
-    gchar *render_command = g_strdup_printf ("var rendered = Book.renderTo('area').then(function(){});");
-    webkit_web_view_run_javascript (webView, render_command, NULL, NULL, NULL);
-    g_free(render_command);
-}
 
 void
 gb_webkit_load_changed (WebKitWebView  *web_view,
@@ -88,8 +69,6 @@ gb_webkit_load_changed (WebKitWebView  *web_view,
     case WEBKIT_LOAD_FINISHED:
         /* Load finished, we can now stop the spinner */
         printf("webkit_load_finished: '%s' \n", uri);
-        //load_book(web_view);
-        //render_book(web_view);
         break;
     }
 }
@@ -134,7 +113,7 @@ gb_request_cb (WebKitURISchemeRequest *request,
     printf("Path: %s \n", path);
 
     if (!path || path[0] == '\0') {
-        file = g_file_new_for_path ("epub.js/examples/single1.html");
+        file = g_file_new_for_path ("epub.js/examples/single.html");
     } else {
         gchar *dir = g_get_current_dir ();
         gchar *fn = g_build_filename (dir, path, NULL);
@@ -157,6 +136,7 @@ gb_request_cb (WebKitURISchemeRequest *request,
 void
 gb_register_uri ()
 {
+    printf("Registering URI");
     WebKitWebContext *context = webkit_web_context_get_default ();
     WebKitSecurityManager *security = webkit_web_context_get_security_manager (context);
 
@@ -268,6 +248,14 @@ gb_webview_init (GbWebView* self)
     gtk_widget_grab_focus(GTK_WIDGET(priv->webView));
 }
 
+/**
+* gb_webview_get_view:
+* @self: #GbWebView
+*
+* Returns the WebKitWebView @self.
+*
+* Returns: (transfer none): the button area #WebKitWebView.
+*/
 WebKitWebView*      
 gb_webview_get_view (GbWebView *self)
 {
@@ -276,15 +264,33 @@ gb_webview_get_view (GbWebView *self)
     return self->priv->webView;
 }
 
+/**
+ * gb_webview_register_URI:
+ * @self:
+ * @cancellable: (allow-none):
+ * @callback:
+ */
 void
 gb_webview_register_URI (GbWebView *self)
 {
-    WebKitWebView *webView;
-
+    WebKitWebView* webView;
+    
     webView = self->priv->webView;
+    printf("gb_webview_register_URI\n");
     gb_register_uri ();
     g_idle_add(gb_load, webView);
 }
+
+void
+gb_webview_run_JS (GbWebView* self, 
+                   gchar*     load_command)
+{
+    WebKitWebView* webView;
+    
+    webView = self->priv->webView;
+    webkit_web_view_run_javascript (webView, load_command, NULL, NULL, NULL);
+}
+
 /*
 static void
 gb_webview_finalize (GObject *object)
@@ -295,7 +301,14 @@ gb_webview_finalize (GObject *object)
     G_OBJECT_CLASS (gb_webview_parent_class)->finalize (object);
 }*/
 
-GtkWidget*
+/**
+* gb_webview_new:
+*
+* Creates WebKitWevView.
+*
+* Returns: a new #WebKitWebView object.
+*/
+WebKitWebView*
 gb_webview_new ()
 {
     GObject *self;
@@ -304,7 +317,7 @@ gb_webview_new ()
                          "books-view",
                          NULL);
 
-    return GTK_WIDGET (self);
+    return self;
 }
 /*
 void 

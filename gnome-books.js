@@ -23,10 +23,20 @@ Demo.prototype = {
 
   setupWindow: function() {
     let win = new Gtk.Window();
+    this._cancellable = new Gio.Cancellable();
+
     win.set_title('GNOME Books');
     win.connect("delete-event", function() { 
         Gtk.main_quit();
     });
+
+    var box = new Gtk.Box ({orientation: Gtk.Orientation.VERTICAL, spacing: 5});
+    var hbox = new Gtk.Box ({orientation: Gtk.Orientation.HORIZONTAL, spacing: 5});
+    var vbox = new Gtk.Box ({orientation: Gtk.Orientation.VERTICAL, spacing: 5});
+    
+    this.prevButton = new Gtk.Button ({label: '<'});
+    this.nextButton = new Gtk.Button ({label: '>'});
+    this.loadButton = new Gtk.Button ({label: 'Load Book'});
 
     // Fullscreen mode
     let isFullscreen = false;
@@ -44,9 +54,21 @@ Demo.prototype = {
     win.add(sw);
 
     // WebKit preview
-    //let start_uri = "http://localhost:8080/examples/pagination.html"; 
     this.web_view = new Gb.WebView();
-    this.web_view.register_URI();
+    this.web_view.register_URI (this.web_view);
+
+    this.loadButton.connect("clicked", Lang.bind (this, function () {
+        this.web_view.run_JS ("var Book = ePub('/epub.js/reader/moby-dick/', { width: 1076, height: 588 });");
+        this.web_view.run_JS ("var rendered = Book.renderTo('area').then(function(){});");
+    }));
+
+    this.prevButton.connect("clicked", Lang.bind (this, function () {
+        this.web_view.run_JS("Book.prevPage();");
+    }));
+
+    this.nextButton.connect("clicked", Lang.bind (this, function () {
+        this.web_view.run_JS ("Book.nextPage();")
+    }));
 
     let view = this.web_view.get_view();
     
@@ -54,8 +76,15 @@ Demo.prototype = {
         win.destroy();
     });
 
-    //view.load_uri(start_uri);
-    sw.add(view);
+    hbox.pack_start (this.prevButton, false, false, 0);
+    hbox.pack_start (view, true, true, 0);
+    hbox.pack_start (this.nextButton, false, false, 0);
+    vbox.pack_start (this.loadButton, false, false, 0);
+    box.pack_start (hbox, true, true, 0);
+    box.pack_start (vbox, false, false, 0);
+
+    //sw.add(view);
+    sw.add(box);
 
     view.grab_focus();
 

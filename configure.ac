@@ -1,15 +1,15 @@
+dnl -*- mode: m4 -*-
 AC_PREREQ(2.69)
-
 AC_INIT([Books], [1.0.0], [])
 
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_SRCDIR([lib/gb-webview.c])
+AC_CONFIG_SRCDIR([gnome-books.js])
 AC_CONFIG_HEADER([config/config.h])
 
 GOBJECT_INTROSPECTION_REQUIRE([0.9.6])
 
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects foreign])
 
 AC_PROG_CC
 AC_LANG_C
@@ -17,6 +17,9 @@ AM_PROG_CC_C_O
 AC_PROG_CXX
 AC_ISC_POSIX
 AC_HEADER_STDC
+
+AC_CHECK_LIBM
+AC_SUBST(LIBM)
 
 WEBKIT2GTK_MIN_VERSION=1.10.0
 GLIB_MIN_VERSION=2.39.3
@@ -38,9 +41,6 @@ LT_INIT
 
 GJS_CONSOLE=`$PKG_CONFIG --variable=gjs_console gjs-1.0`
 AC_SUBST(GJS_CONSOLE)
-
-# Introspection
-GOBJECT_INTROSPECTION_CHECK([1.38.0])
 
 AC_SUBST(BOOKS_CFLAGS)
 AC_SUBST(DEPEND_CFLAGS)
