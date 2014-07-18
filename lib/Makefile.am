@@ -22,20 +22,19 @@ gb_cflags =               \
   -I$(top_srcdir)         \
   -I$(top_srcdir)/lib
 
-gb_source_h =             \
-  gb-webview.h            \
+gb_source_h =         \
+  gb-webview.h        \
   $(NULL)
 
 gb_source_c =             \
-  gb-webview.c            \
-  gb-resources.c          \
+  gb-webview.c        \
+  gb-resources.c      \
   $(NULL)
 
 # Defines the library to build.
 lib_LTLIBRARIES += libgbWebView-1.0.la
 
 libgbWebView_1_0_la_LIBADD = $(DEPEND_LIBS)
-
 libgbWebView_1_0_la_LDFLAGS = -avoid-version
 libgbWebView_1_0_la_CPPFLAGS = $(gb_cflags)
 libgbWebView_1_0_la_SOURCES = $(gb_source_c) $(gb_source_h)
