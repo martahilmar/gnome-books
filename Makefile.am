@@ -24,8 +24,9 @@ MAINTAINERCLEANFILES = \
     $(NULL)
 
 GITIGNOREFILES = \
-    m4 \
-    config \
+    m4      \
+    config  \
+    build   \
     $(NULL)
 
 -include $(top_srcdir)/git.mk
