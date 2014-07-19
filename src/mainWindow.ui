@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkApplicationWindow" id="app-window">
+    <property name="width-request">600</property>
+    <property name="height-request">500</property>
+    <property name="window-position">center</property>
+    <property name="title" translatable="yes">Maps</property>
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="header-bar">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="show-close-button">True</property>
+        <style>
+          <class name="titlebar"/>
+        </style>
+        <child>
+          <object class="GtkButton" id="goto-user-location-button">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="valign">center</property>
+            <property name="action-name">win.goto-user-location</property>
+            <style>
+              <class name="image-button"/>
+            </style>
+            <child>
+              <object class="GtkImage" id="track-user-button-image">
+                <property name="visible">True</property>
+                <property name="icon-size">1</property>
+                <property name="icon-name">find-location-symbolic</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="pack-type">start</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="layers-button">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="valign">center</property>
+            <style>
+              <class name="image-button"/>
+            </style>
+            <child>
+              <object class="GtkImage" id="layers-button-image">
+                <property name="visible">True</property>
+                <property name="icon-size">1</property>
+                <property name="pixbuf">layers-button.svg</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="toggle-sidebar-button">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="valign">center</property>
+            <property name="action-name">win.toggle-sidebar</property>
+            <style>
+              <class name="image-button"/>
+            </style>
+            <child>
+              <object class="GtkImage" id="toggle-sidebar-button-image">
+                <property name="visible">True</property>
+                <property name="icon-size">1</property>
+                <property name="pixbuf">route-button</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="pack-type">end</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

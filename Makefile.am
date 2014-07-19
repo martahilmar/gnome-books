@@ -1,6 +1,6 @@
-ACLOCAL_AMFLAGS = -I m4 -I lib ${ACLOCAL_FLAGS}
+ACLOCAL_AMFLAGS = -I m4
 DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
-SUBDIRS=lib
+SUBDIRS=src
 
 MAINTAINERCLEANFILES = \
     $(srcdir)/AUTHORS \
@@ -23,10 +23,11 @@ MAINTAINERCLEANFILES = \
     $(srcdir)/gtk-doc.make \
     $(NULL)
 
-GITIGNOREFILES = \
-    m4      \
-    config  \
-    build   \
+GITIGNOREFILES =    \
+    m4              \
+    config          \
+    build           \
+    node_modules    \
     $(NULL)
 
 -include $(top_srcdir)/git.mk

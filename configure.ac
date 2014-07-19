@@ -4,12 +4,13 @@ AC_INIT([Books], [1.0.0], [])
 
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_SRCDIR([gnome-books.js])
+AC_CONFIG_SRCDIR([src/main.js])
 AC_CONFIG_HEADER([config/config.h])
 
 GOBJECT_INTROSPECTION_REQUIRE([0.9.6])
 
-AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects foreign])
+AM_INIT_AUTOMAKE([1.10 no-define foreign dist-xz no-dist-gzip])
+AM_MAINTAINER_MODE([enable])
 
 AC_PROG_CC
 AC_LANG_C
@@ -29,7 +30,8 @@ GOBJECT_INTROSPECTION_MIN_VERSION=1.31.6
 PKG_CHECK_MODULES(DEPEND, 												\
 	gtk+-3.0 >= $GTK_MIN_VERSION 										\
 	webkit2gtk-3.0 >= $WEBKIT2GTK_MIN_VERSION							\
-	gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_MIN_VERSION)
+	gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_MIN_VERSION		\
+	gjs-1.0)
 
 AC_PROG_CC_STDC
 
@@ -50,9 +52,8 @@ top_builddir=`pwd`
 AC_SUBST(top_builddir)
 
 AC_CONFIG_FILES([
-	Makefile 
-	lib/Makefile
-	gnome-books.desktop
+	Makefile
+	src/Makefile
 ])
 
 AC_OUTPUT

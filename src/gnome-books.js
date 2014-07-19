@@ -1,5 +1,3 @@
-#!/usr/bin/gjs
-
 imports.gi.versions.Gtk = '3.0';
 imports.gi.versions.WebKit2 = '3.0';
 
@@ -87,11 +85,12 @@ Demo.prototype = {
     sw.add(box);
 
     view.grab_focus();
-
-    // view.get_inspector().show();
+    /*
+    view.get_inspector().show();
     view.get_inspector().connect('attach', function(ins, data) { 
         win.set_size_request(1340, 768 + ins.get_attached_height());
     });
+    */
 
     // Settings
     let s = view.get_settings();

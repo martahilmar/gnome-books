@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.gnome.Books
+Exec=@bindir@/gnome-books --gapplication-service
