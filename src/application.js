@@ -37,7 +37,6 @@ const Application = new Lang.Class({
     Extends: Gtk.Application,
 
     _init: function() {
-        log("_init");
         this._activationTimestamp = Gdk.CURRENT_TIME;
 
         Gettext.bindtextdomain('gnome-books', Path.LOCALE_DIR);
@@ -49,12 +48,10 @@ const Application = new Lang.Class({
     },
 
     _onQuitActivate: function() {
-        log("1");
         this._mainWindow.window.destroy();
     },
 
     vfunc_startup: function() {
-        log("2");
         this.parent();
         String.prototype.format = Format.format;
 
@@ -68,12 +65,10 @@ const Application = new Lang.Class({
     },
 
     vfunc_shutdown: function() {
-        log("3");
         this.parent();
     },
 
     _createWindow: function() {
-        log("4");
         if (this._mainWindow)
             return;
 
@@ -82,18 +77,15 @@ const Application = new Lang.Class({
     },
 
     vfunc_dbus_register: function(connection, path) {
-        log("5");
         this.parent(connection, path);
         return true;
     },
 
     vfunc_dbus_unregister: function(connection, path) {
-        log("6");
         this.parent(connection, path);
     },
 
     vfunc_activate: function() {
-        log("7");
         if (!this._mainWindow) {
             this._createWindow();
             //this._mainWindow.window.present();
@@ -101,7 +93,6 @@ const Application = new Lang.Class({
     },
 
     _onWindowDestroy: function(window) {
-        log("9");
         this._mainWindow = null;
     },
 });

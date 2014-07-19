@@ -26,7 +26,6 @@ MAINTAINERCLEANFILES = \
 GITIGNOREFILES =    \
     m4              \
     config          \
-    build           \
     node_modules    \
     $(NULL)
 

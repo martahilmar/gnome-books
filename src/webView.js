@@ -11,46 +11,22 @@ const Gb = imports.gi.Gb;
 
 const Utils = imports.utils;
 
+const _PREVIEW_NAVBAR_MARGIN = 30;
+const _AUTO_HIDE_TIMEOUT = 2;
+
 const WebView = new Lang.Class ({
     Name: 'WebView',
 
-    _init: function (app) {
-        this.view = this._initView(app);
+    _init: function (app, overlay) {
+        this.view = this._initView(app, overlay);
     },
 
-    _initView: function(app) {
-        let win = new Gtk.ApplicationWindow({   application: app,
-                                                title: "Hello World" });
-        
-        //this._cancellable = new Gio.Cancellable();
+    _initView: function(app, overlay) {
 
-        win.set_title('GNOME Books');
-        win.connect("delete-event", function() { 
-            Gtk.main_quit();
-        });
+        this._overlay = overlay;
+        var hbox = new Gtk.Box ({orientation: Gtk.Orientation.VERTICAL, spacing: 5});
 
-        var box = new Gtk.Box ({orientation: Gtk.Orientation.VERTICAL, spacing: 5});
-        var hbox = new Gtk.Box ({orientation: Gtk.Orientation.HORIZONTAL, spacing: 5});
-        var vbox = new Gtk.Box ({orientation: Gtk.Orientation.VERTICAL, spacing: 5});
-        
-        this.prevButton = new Gtk.Button ({label: '<'});
-        this.nextButton = new Gtk.Button ({label: '>'});
         this.loadButton = new Gtk.Button ({label: 'Load Book'});
-
-        // Fullscreen mode
-        let isFullscreen = false;
-        let accel_group = new Gtk.AccelGroup();
-        accel_group.connect(Gdk.KEY_F11, 0, Gtk.AccelFlags.VISIBLE, function() {
-            if(isFullscreen)
-                win.unfullscreen();
-            else
-                win.fullscreen();
-            isFullscreen = !isFullscreen;
-        });
-        win.add_accel_group(accel_group);
-
-        let sw = new Gtk.ScrolledWindow({});
-        win.add(sw);
 
         // WebKit preview
         this.web_view = new Gb.WebView();
@@ -61,47 +37,58 @@ const WebView = new Lang.Class ({
             this.web_view.run_JS ("var rendered = Book.renderTo('area').then(function(){});");
         }));
 
-        this.prevButton.connect("clicked", Lang.bind (this, function () {
-            this.web_view.run_JS("Book.prevPage();");
-        }));
-
-        this.nextButton.connect("clicked", Lang.bind (this, function () {
-            this.web_view.run_JS ("Book.nextPage();")
-        }));
-
         let view = this.web_view.get_view();
-
-        hbox.pack_start (this.prevButton, false, false, 0);
-        hbox.pack_start (view, true, true, 0);
-        hbox.pack_start (this.nextButton, false, false, 0);
-        vbox.pack_start (this.loadButton, false, false, 0);
-        box.pack_start (hbox, true, true, 0);
-        box.pack_start (vbox, false, false, 0);
-
-        //sw.add(view);
-        sw.add(box);
-
-        view.grab_focus();
-        /*
-        view.get_inspector().show();
-        view.get_inspector().connect('attach', function(ins, data) { 
-            win.set_size_request(1340, 768 + ins.get_attached_height());
-        });
-        */
-
         // Settings
         let s = view.get_settings();
         s.enable_javascript = true;
-        s.auto_load_images = true;         // Temporary
+        s.auto_load_images = true;
         s.enable_fullscreen = true;
         s.enable_developer_extras = true;
         s.enable_xss_auditor = false;
         view.set_settings(s);
 
-        win.set_size_request(1340, 768);
-        win.set_position(Gtk.WindowPosition.CENTER);
-        win.show_all();
+        hbox.pack_start (view, true, true, 0);
+        hbox.pack_start (this.loadButton, false, false, 0);
+        this._overlay.add(hbox);
 
-        return win;
-    }
+        this.prev_widget = new Gtk.Button({ child: new Gtk.Image ({ icon_name: 'go-previous-symbolic',
+                                                                    pixel_size: 16 }),
+                                            margin_left: _PREVIEW_NAVBAR_MARGIN,
+                                            margin_right: _PREVIEW_NAVBAR_MARGIN,
+                                            halign: Gtk.Align.START,
+                                            valign: Gtk.Align.CENTER });
+        this.prev_widget.get_style_context().add_class('osd');
+        this._overlay.add_overlay(this.prev_widget);
+        this.prev_widget.connect('clicked', Lang.bind(this, this._onPrevClicked));
+
+        this.next_widget = new Gtk.Button({ child: new Gtk.Image ({ icon_name: 'go-next-symbolic',
+                                                                    pixel_size: 16 }),
+                                            margin_left: _PREVIEW_NAVBAR_MARGIN,
+                                            margin_right: _PREVIEW_NAVBAR_MARGIN,
+                                            halign: Gtk.Align.END,
+                                            valign: Gtk.Align.CENTER });
+        this.next_widget.get_style_context().add_class('osd');
+        this._overlay.add_overlay(this.next_widget);
+        this.next_widget.connect('clicked', Lang.bind(this, this._onNextClicked));
+
+        this._overlay.show_all();
+        this._overlay.connect('motion-notify-event', Lang.bind(this, this._onMotion));
+    },
+
+    _onPrevClicked: function() {
+        this.web_view.run_JS("Book.prevPage();");
+    },
+
+    _onNextClicked: function() {
+        this.web_view.run_JS ("Book.nextPage();")
+    },
+
+    _onMotion: function() {
+        if (this._motionId != 0) {
+            return false;
+        }
+
+        this._motionId = Mainloop.idle_add(Lang.bind(this, this._motionTimeout));
+        return false;
+    },
 });

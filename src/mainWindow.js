@@ -20,10 +20,29 @@ const MainWindow = new Lang.Class({
     Name: 'MainWindow',
 
     _init: function(app) {
+        let win = new Gtk.ApplicationWindow({   application: app,
+                                                title: "GNOME Books" });
+
+        win.connect("delete-event", function() {
+            Gtk.main_quit();
+        });
+
+        let sw = new Gtk.ScrolledWindow({});
+        win.add(sw);
+
         this._configureId = 0;
         //let ui = Utils.getUIObject('main-window', [ 'app-window' ]);
-        this.webView = new WebView.WebView(app);
-        this.window = this.webView;
+        this.widget = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL,
+                                    visible: true });
+        this._overlay = new Gtk.Overlay({ visible: true });
+        this.widget.pack_end(this._overlay, true, true, 0);
+
+        this.webView = new WebView.WebView(app, this._overlay);
+
+        sw.add(this.widget);
+        win.set_size_request(1340, 768);
+        win.set_position(Gtk.WindowPosition.CENTER);
+        win.show_all();
     },
 
     _initActions: function() {
