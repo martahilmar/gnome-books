@@ -58,6 +58,4 @@ void			gb_webview_run_JS		(GbWebView *self, gchar* load_command);
 					                     GCancellable* cancellable,
 					                     GAsyncReadyCallback callback);*/
 
-G_END_DECLS
-
 #endif /* __GB_WEBVIEW_H__ */

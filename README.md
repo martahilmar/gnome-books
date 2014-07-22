@@ -13,10 +13,12 @@ Using epub.js library for the reading mode.
 
 ## 1. Installing GNOME Books
 
+    $ ./autogen
     $ make
+    $ sudo make install
     $ export LD_LIBRARY_PATH=`pwd`/src/lib/.libs:$LD_LIBRARY_PATH
     $ export GI_TYPELIB_PATH=`pwd`/src
 
 ## 2. Running GNOME Books
 
-    $ gjs gnome-books.js
+    $ gnome-books
