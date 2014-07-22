@@ -51,15 +51,15 @@ service_in_files = org.gnome.Books.service.in
 servicedir = $(datadir)/dbus-1/services
 service_DATA = org.gnome.Books.service
 org.gnome.Books.service: org.gnome.Books.service.in
-  $(AM_V_GEN) $(do_subst) $< > $@
+	$(AM_V_GEN) $(do_subst) $< > $@
 
 CLEANFILES += $(service_DATA)
 EXTRA_DIST += $(service_in_files)
 
 bin_SCRIPTS += gnome-books
 gnome-books: gnome-books.in
-  $(AM_V_GEN) $(do_subst) $< > $@
-  chmod +x $@
+	$(AM_V_GEN) $(do_subst) $< > $@ 
+	chmod +x $@
 
 CLEANFILES += gnome-books
 EXTRA_DIST += gnome-books.in

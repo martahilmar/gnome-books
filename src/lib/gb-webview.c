@@ -136,7 +136,6 @@ gb_request_cb (WebKitURISchemeRequest *request,
 void
 gb_register_uri ()
 {
-    printf("\n Martaaaaaaaaaaaa");
     WebKitWebContext *context = webkit_web_context_get_default ();
     WebKitSecurityManager *security = webkit_web_context_get_security_manager (context);
 
@@ -191,13 +190,24 @@ gb_webview_set_property (GObject      *object,
 }
 
 static void
+gb_webview_finalize (GObject *object)
+{
+    GbWebView *self = GB_WEBVIEW (object);
+    GbWebViewPrivate *priv = GB_WEBVIEW_GET_PRIVATE (self->priv);
+
+    g_free (priv->webView);
+    G_OBJECT_CLASS (gb_webview_parent_class)->finalize (object);
+}
+
+static void
 gb_webview_class_init (GbWebViewClass *class)
 {
     GObjectClass *object_class = G_OBJECT_CLASS (class);
 
     object_class->get_property = gb_webview_get_property;
     object_class->set_property = gb_webview_set_property;
-    //object_class->finalize = gb_webview_finalize;
+    object_class->finalize = gb_webview_finalize;
+
     g_object_class_install_property (object_class,
                                      PROP_WEBVIEW,
                                      g_param_spec_object ("books-view",
@@ -214,7 +224,7 @@ gb_webview_class_init (GbWebViewClass *class)
 static void
 gb_webview_init (GbWebView* self)
 {
-    GbWebViewPrivate*   priv;
+    GbWebViewPrivate* priv;
 
     self->priv = GB_WEBVIEW_GET_PRIVATE (self);
     priv = self->priv;
@@ -290,16 +300,6 @@ gb_webview_run_JS (GbWebView* self,
     webView = self->priv->webView;
     webkit_web_view_run_javascript (webView, load_command, NULL, NULL, NULL);
 }
-
-/*
-static void
-gb_webview_finalize (GObject *object)
-{
-    GbWebViewPrivate *priv = GB_WEBVIEW_GET_PRIVATE (object);
-
-    g_free (priv->webView);
-    G_OBJECT_CLASS (gb_webview_parent_class)->finalize (object);
-}*/
 
 /**
 * gb_webview_new:

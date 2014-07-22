@@ -47,8 +47,52 @@ const Application = new Lang.Class({
         this.parent({ application_id: 'org.gnome.Books' });
     },
 
-    _onQuitActivate: function() {
+    _onActionQuit: function() {
         this._mainWindow.window.destroy();
+    },
+
+    _initActions: function() {
+        this._actionEntries.forEach(Lang.bind(this,
+            function(actionEntry) {
+                let state = actionEntry.state;
+                let parameterType = actionEntry.parameter_type ?
+                    GLib.VariantType.new(actionEntry.parameter_type) : null;
+                let action;
+
+                if (state)
+                    action = Gio.SimpleAction.new_stateful(actionEntry.name,
+                        parameterType, actionEntry.state);
+                else
+                    action = new Gio.SimpleAction({ name: actionEntry.name });
+
+                if (actionEntry.create_hook)
+                    actionEntry.create_hook.apply(this, [action]);
+
+                if (actionEntry.callback)
+                    action.connect('activate', Lang.bind(this, actionEntry.callback));
+
+                if (actionEntry.accel)
+                    this.add_accelerator(actionEntry.accel, 'app.' + actionEntry.name, null);
+
+                if (actionEntry.accels)
+                    this.set_accels_for_action('app.' + actionEntry.name, actionEntry.accels);
+
+                this.add_action(action);
+            }));
+    },
+
+    _connectActionsToMode: function() {
+        this._actionEntries.forEach(Lang.bind(this,
+            function(actionEntry) {
+                if (actionEntry.window_mode) {
+                    modeController.connect('window-mode-changed', Lang.bind(this,
+                        function() {
+                            let mode = modeController.getWindowMode();
+                            let action = this.lookup_action(actionEntry.name);
+                            action.set_enabled(mode == actionEntry.window_mode);
+                        }));
+                }
+            }));
     },
 
     vfunc_startup: function() {
@@ -58,10 +102,13 @@ const Application = new Lang.Class({
         application = this;
         settings = new Gio.Settings({ schema: 'org.gnome.books' });
 
-        Utils.initActions(this, [{
-            properties: { name: 'quit' },
-            signalHandlers: { activate: this._onQuitActivate }
-        }], this);
+        this._actionEntries = [
+            { name: 'quit',
+              callback: this._onActionQuit,
+              accel: '<Primary>q' }
+        ];
+
+        this._initActions();
     },
 
     vfunc_shutdown: function() {
@@ -73,7 +120,8 @@ const Application = new Lang.Class({
             return;
 
         this._mainWindow = new MainWindow.MainWindow(this);
-        //this._mainWindow.window.connect('destroy', Lang.bind(this, this._onWindowDestroy.bind(this)));
+        this._mainWindow.window.connect('destroy', Lang.bind(this, this._onWindowDestroy));
+        this._connectActionsToMode();
     },
 
     vfunc_dbus_register: function(connection, path) {
@@ -94,7 +142,7 @@ const Application = new Lang.Class({
 
     _onWindowDestroy: function(window) {
         this._mainWindow = null;
-    },
+    }
 });
 
 Utils.addSignalMethods(Application.prototype);

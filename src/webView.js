@@ -9,8 +9,6 @@ const WebKit = imports.gi.WebKit2;
 const Lang = imports.lang;
 const Gb = imports.gi.Gb;
 
-const Utils = imports.utils;
-
 const _PREVIEW_NAVBAR_MARGIN = 30;
 const _AUTO_HIDE_TIMEOUT = 2;
 
@@ -48,7 +46,7 @@ const WebView = new Lang.Class ({
         view.set_settings(s);
 
         hbox.pack_start (view, true, true, 0);
-        hbox.pack_start (this.loadButton, false, false, 0);
+        hbox.pack_start (this.loadButton, false, false, 0)
         this._overlay.add(hbox);
 
         this.prev_widget = new Gtk.Button({ child: new Gtk.Image ({ icon_name: 'go-previous-symbolic',

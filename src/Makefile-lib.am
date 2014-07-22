@@ -2,7 +2,7 @@ gb_cflags =               \
   -I$(top_srcdir)/src     \
   -I$(top_srcdir)/lib
 
-gb_source_h =			\
+gb_source_h =			    \
   lib/gb-webview.h		\
   $(NULL)
 
@@ -17,7 +17,10 @@ lib_LTLIBRARIES += libgbWebView-1.0.la
 libgbWebView_1_0_la_LIBADD = $(DEPEND_LIBS)
 libgbWebView_1_0_la_LDFLAGS = -avoid-version
 libgbWebView_1_0_la_CPPFLAGS = $(gb_cflags)
-libgbWebView_1_0_la_SOURCES = $(gb_source_c) $(gb_source_h)
+libgbWebView_1_0_la_SOURCES = \
+  $(gb_source_c) \
+  $(gb_source_h) \
+  $(NULL)
 
 INTROSPECTION_GIRS = Gb_1_0_gir
 INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all

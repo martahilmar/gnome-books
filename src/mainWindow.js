@@ -20,18 +20,20 @@ const MainWindow = new Lang.Class({
     Name: 'MainWindow',
 
     _init: function(app) {
-        let win = new Gtk.ApplicationWindow({   application: app,
-                                                title: "GNOME Books" });
+        this.window = new Gtk.ApplicationWindow({ application: app,
+                                                  width_request: _WINDOW_MIN_WIDTH,
+                                                  height_request: _WINDOW_MIN_HEIGHT,
+                                                  window_position: Gtk.WindowPosition.CENTER,
+                                                  title: "GNOME Books" });
 
-        win.connect("delete-event", function() {
-            Gtk.main_quit();
-        });
+        this._initActions();
+        this._initSignals();
+        this._restoreWindowGeometry();
 
-        let sw = new Gtk.ScrolledWindow({});
-        win.add(sw);
+        this.window.connect('delete-event',
+                            Lang.bind(this, this._quit));
 
         this._configureId = 0;
-        //let ui = Utils.getUIObject('main-window', [ 'app-window' ]);
         this.widget = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL,
                                     visible: true });
         this._overlay = new Gtk.Overlay({ visible: true });
@@ -39,10 +41,10 @@ const MainWindow = new Lang.Class({
 
         this.webView = new WebView.WebView(app, this._overlay);
 
-        sw.add(this.widget);
-        win.set_size_request(1340, 768);
-        win.set_position(Gtk.WindowPosition.CENTER);
-        win.show_all();
+        this.window.add(this.widget);
+        this.window.set_size_request(1340, 768);
+        this.window.set_position(Gtk.WindowPosition.CENTER);
+        this.window.show_all();
     },
 
     _initActions: function() {
@@ -63,8 +65,6 @@ const MainWindow = new Lang.Class({
         this.window.connect('key-press-event',
                             this._onKeyPressEvent.bind(this));
 
-        this.webView.view.connect('button-press-event',
-                                  this._overlay.grab_focus.bind(this._overlay));
         this._viewMovedId = 0;
     },
 
@@ -75,29 +75,30 @@ const MainWindow = new Lang.Class({
         if (state & Gdk.WindowState.MAXIMIZED)
             return;
 
-        // GLib.Variant.new() can handle arrays just fine
         let size = this.window.get_size();
-        Application.settings.set('window-size', size);
+        let variant = GLib.Variant.new ('ai', size);
+        Application.settings.set_value('window-size', variant);
 
         let position = this.window.get_position();
-        Application.settings.set('window-position', position);
+        variant = GLib.Variant.new ('ai', position);
+        Application.settings.set_value('window-position', variant);
     },
 
     _restoreWindowGeometry: function() {
-        let size = Application.settings.get('window-size');
+        let size = Application.settings.get_value('window-size');
         if (size.length === 2) {
             let [width, height] = size;
             this.window.set_default_size(width, height);
         }
 
-        let position = Application.settings.get('window-position');
+        let position = Application.settings.get_value('window-position');
         if (position.length === 2) {
             let [x, y] = position;
 
             this.window.move(x, y);
         }
 
-        if (Application.settings.get('window-maximized'))
+        if (Application.settings.get_value('window-maximized'))
             this.window.maximize();
     },
 
@@ -122,7 +123,7 @@ const MainWindow = new Lang.Class({
             return;
 
         let maximized = (state & Gdk.WindowState.MAXIMIZED);
-        Application.settings.set('window-maximized', maximized);
+        Application.settings.set_boolean('window-maximized', maximized);
     },
 
     _onKeyPressEvent: function(widget, event) {
@@ -142,13 +143,12 @@ const MainWindow = new Lang.Class({
     },
 
     _quit: function() {
-        // remove configure event handler if still there
         if (this._configureId !== 0) {
             Mainloop.source_remove(this._configureId);
             this._configureId = 0;
         }
 
-        // always save geometry before quitting
+        // Save geometry before quitting
         this._saveWindowGeometry();
 
         return false;
