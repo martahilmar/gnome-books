@@ -13,37 +13,37 @@ const Utils = imports.utils;
 const _ = imports.gettext.gettext;
 
 const _CONFIGURE_ID_TIMEOUT = 100; // msecs
-const _WINDOW_MIN_WIDTH = 600;
-const _WINDOW_MIN_HEIGHT = 500;
+const _WINDOW_MIN_WIDTH = 1340;
+const _WINDOW_MIN_HEIGHT = 768;
 
 const MainWindow = new Lang.Class({
     Name: 'MainWindow',
 
     _init: function(app) {
+        this._scrolledWindow = new Gtk.ScrolledWindow();
         this.window = new Gtk.ApplicationWindow({ application: app,
                                                   width_request: _WINDOW_MIN_WIDTH,
                                                   height_request: _WINDOW_MIN_HEIGHT,
                                                   window_position: Gtk.WindowPosition.CENTER,
                                                   title: "GNOME Books" });
-
         this._initActions();
         this._initSignals();
         this._restoreWindowGeometry();
-
+        this.window.add(this._scrolledWindow);
+        this.window.set_position(Gtk.WindowPosition.CENTER);
         this.window.connect('delete-event',
                             Lang.bind(this, this._quit));
 
         this._configureId = 0;
-        this.widget = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL,
+        this._widget = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL,
                                     visible: true });
         this._overlay = new Gtk.Overlay({ visible: true });
-        this.widget.pack_end(this._overlay, true, true, 0);
+        this._widget.pack_end(this._overlay, true, true, 0);
 
         this.webView = new WebView.WebView(app, this._overlay);
+        this._scrolledWindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER);
+        this._scrolledWindow.add(this._widget);
 
-        this.window.add(this.widget);
-        this.window.set_size_request(1340, 768);
-        this.window.set_position(Gtk.WindowPosition.CENTER);
         this.window.show_all();
     },
 

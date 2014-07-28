@@ -136,7 +136,6 @@ gb_request_cb (WebKitURISchemeRequest *request,
 void
 gb_register_uri ()
 {
-    printf("Registering URI");
     WebKitWebContext *context = webkit_web_context_get_default ();
     WebKitSecurityManager *security = webkit_web_context_get_security_manager (context);
 
@@ -287,7 +286,6 @@ gb_webview_register_URI (GbWebView *self)
     WebKitWebView* webView;
     
     webView = self->priv->webView;
-    printf("gb_webview_register_URI\n");
     gb_register_uri ();
     g_idle_add(gb_load, webView);
 }

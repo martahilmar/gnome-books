@@ -22,6 +22,8 @@ const WebView = new Lang.Class ({
     _initView: function(app, overlay) {
 
         this._overlay = overlay;
+        //this._grid = new Gtk.Grid();
+
         var hbox = new Gtk.Box ({orientation: Gtk.Orientation.VERTICAL, spacing: 5});
 
         this.loadButton = new Gtk.Button ({label: 'Load Book'});
@@ -45,6 +47,8 @@ const WebView = new Lang.Class ({
         s.enable_xss_auditor = false;
         view.set_settings(s);
 
+        //this._grid.attach (view, 0, 0, 1, 1);
+        //this._grid.attach (this.loadButton, 0, 1, 1, 1);
         hbox.pack_start (view, true, true, 0);
         hbox.pack_start (this.loadButton, false, false, 0)
         this._overlay.add(hbox);
@@ -88,5 +92,5 @@ const WebView = new Lang.Class ({
 
         this._motionId = Mainloop.idle_add(Lang.bind(this, this._motionTimeout));
         return false;
-    },
+    }
 });
