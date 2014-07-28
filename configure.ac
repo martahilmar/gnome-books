@@ -9,7 +9,7 @@ AC_CONFIG_HEADER([config/config.h])
 
 GOBJECT_INTROSPECTION_REQUIRE([0.9.6])
 
-AM_INIT_AUTOMAKE([1.10 no-define foreign dist-xz no-dist-gzip])
+AM_INIT_AUTOMAKE([1.10 no-define foreign dist-xz no-dist-gzip subdir-objects])
 AM_MAINTAINER_MODE([enable])
 
 AC_PROG_CC
@@ -38,7 +38,7 @@ AC_PROG_CC_STDC
 BOOKS_CFLAGS="-Wall"
 
 # library-specific macros
-AM_PROG_AR
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 LT_INIT
 
 GJS_CONSOLE=`$PKG_CONFIG --variable=gjs_console gjs-1.0`
