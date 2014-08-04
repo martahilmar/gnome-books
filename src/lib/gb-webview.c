@@ -34,6 +34,7 @@ G_DEFINE_TYPE (GbWebView, gb_webview, G_TYPE_OBJECT)
 
 struct _GbWebViewPrivate {
     WebKitWebView *webView;
+    int pages;
 };
 
 enum
@@ -230,6 +231,7 @@ gb_webview_init (GbWebView* self)
     priv = self->priv;
 
     priv->webView = WEBKIT_WEB_VIEW(webkit_web_view_new());
+    priv->pages = -1;
 
     WebKitSettings *s = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(priv->webView));
     
@@ -258,6 +260,48 @@ gb_webview_init (GbWebView* self)
     gtk_widget_grab_focus(GTK_WIDGET(priv->webView));
 }
 
+
+void
+gb_web_view_finished_JS      (GObject*      self,
+                              GAsyncResult  *result,
+                              gpointer      user_data)
+{
+    //WebKitWebView* webView;
+    //webView = self->priv->webView;
+
+    WebKitJavascriptResult *js_result;
+    JSValueRef              value;
+    JSGlobalContextRef      context;
+    GError                 *error = NULL;
+
+    js_result = webkit_web_view_run_javascript_finish (WEBKIT_WEB_VIEW(self), result, &error);
+    if (!js_result) {
+        g_warning ("Error running javascript: %s", error->message);
+        g_error_free (error);
+        return;
+    }
+
+    context = webkit_javascript_result_get_global_context (js_result);
+    value = webkit_javascript_result_get_value (js_result);
+    if (JSValueIsString (context, value)) {
+        JSStringRef js_str_value;
+        gchar      *str_value;
+        gsize       str_length;
+
+        js_str_value = JSValueToStringCopy (context, value, NULL);
+        str_length = JSStringGetMaximumUTF8CStringSize (js_str_value);
+        str_value = (gchar *)g_malloc (str_length);
+        JSStringGetUTF8CString (js_str_value, str_value, str_length);
+        JSStringRelease (js_str_value);
+        user_data = str_value;
+        g_print ("----------------- Script result: %s\n", user_data);
+        g_free (str_value);
+    } else {
+        g_warning ("Error running javascript: unexpected return value");
+    }
+    webkit_javascript_result_unref (js_result);
+}
+
 /**
 * gb_webview_get_view:
 * @self: #GbWebView
@@ -275,11 +319,20 @@ gb_webview_get_view (GbWebView *self)
 }
 
 /**
- * gb_webview_register_URI:
- * @self:
- * @cancellable: (allow-none):
- * @callback:
- */
+* gb_webview_get_pages:
+*
+* Returns the number of pages.
+*
+* Returns: (transfer none): value #int.
+*/
+int      
+gb_webview_get_pages (GbWebView *self)
+{
+    g_return_val_if_fail (GB_IS_WEBVIEW (self), NULL);
+
+    return self->priv->pages;
+}
+
 void
 gb_webview_register_URI (GbWebView *self)
 {
@@ -298,6 +351,29 @@ gb_webview_run_JS (GbWebView* self,
     
     webView = self->priv->webView;
     webkit_web_view_run_javascript (webView, load_command, NULL, NULL, NULL);
+}
+
+void
+gb_webview_run_JS_return (GbWebView* self, 
+                          gchar*     load_command)
+{
+    WebKitWebView* webView;
+    gpointer user_data;
+
+    webView = self->priv->webView;
+    webkit_web_view_run_javascript (webView, load_command, NULL, gb_web_view_finished_JS, user_data);
+    //self->priv->pages = (int*)user_data;
+    self->priv->pages = 1013;
+}
+
+void
+gb_webview_load_book (gchar* path)
+{
+    GError *error = NULL;
+    GFile *file = NULL;
+    file = g_file_new_for_path (path);
+
+    GFileInputStream *strm = g_file_read (file, NULL, &error);
 }
 
 /**

@@ -134,10 +134,8 @@ const Application = new Lang.Class({
     },
 
     vfunc_activate: function() {
-        if (!this._mainWindow) {
+        if (!this._mainWindow)
             this._createWindow();
-            //this._mainWindow.window.present();
-        }
     },
 
     _onWindowDestroy: function(window) {

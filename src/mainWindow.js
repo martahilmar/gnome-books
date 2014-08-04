@@ -26,13 +26,12 @@ const MainWindow = new Lang.Class({
                                                   height_request: _WINDOW_MIN_HEIGHT,
                                                   window_position: Gtk.WindowPosition.CENTER,
                                                   title: "GNOME Books" });
-        this._initActions();
         this._initSignals();
         this._restoreWindowGeometry();
         this.window.add(this._scrolledWindow);
         this.window.set_position(Gtk.WindowPosition.CENTER);
-        this.window.connect('delete-event',
-                            Lang.bind(this, this._quit));
+
+        this.window.set_events(Gdk.EventMask.POINTER_MOTION_MASK);
 
         this._configureId = 0;
         this._widget = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL,
@@ -45,15 +44,6 @@ const MainWindow = new Lang.Class({
         this._scrolledWindow.add(this._widget);
 
         this.window.show_all();
-    },
-
-    _initActions: function() {
-        Utils.initActions(this.window, [
-            {
-                properties: { name: 'close' },
-                signalHandlers: { activate: this.window.close.bind(this.window) }
-            },
-        ], this);
     },
 
     _initSignals: function() {
@@ -98,8 +88,8 @@ const MainWindow = new Lang.Class({
             this.window.move(x, y);
         }
 
-        if (Application.settings.get_value('window-maximized'))
-            this.window.maximize();
+        //if (Application.settings.get_value('window-maximized'))
+        //    this.window.maximize();
     },
 
     _onConfigureEvent: function(widget, event) {
@@ -148,7 +138,7 @@ const MainWindow = new Lang.Class({
             this._configureId = 0;
         }
 
-        // Save geometry before quitting
+        //this._overlay.destroy();
         this._saveWindowGeometry();
 
         return false;

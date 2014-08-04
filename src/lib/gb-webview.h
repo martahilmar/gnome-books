@@ -53,9 +53,12 @@ void			gb_webview_register_URI	(GbWebView* self);
 				                         GCancellable* cancellable,
 				                         GAsyncReadyCallback callback);*/
 void			gb_webview_run_JS		(GbWebView *self, gchar* load_command);
+void			gb_webview_load_book 	(gchar* path);
+void			gb_webview_run_JS_return (GbWebView* self,
+                				          gchar*     load_command);
 /*void			gb_webview_load_book 	(GbWebView* self,
 					                     const gchar* uri,
 					                     GCancellable* cancellable,
 					                     GAsyncReadyCallback callback);*/
-
+int 			gb_webview_get_pages 	(GbWebView *self);
 #endif /* __GB_WEBVIEW_H__ */
