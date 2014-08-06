@@ -1,18 +1,3 @@
-/* -*- Mode: c; c-basic-offset: 4 -*- 
- *
- * GOBject Introspection Tutorial 
- * 
- * Written in 2013 by Simon Kågedal Reimer <skagedal@gmail.com>
- *
- * To the extent possible under law, the author have dedicated all
- * copyright and related and neighboring rights to this software to
- * the public domain worldwide. This software is distributed without
- * any warranty.
- *
- * CC0 Public Domain Dedication:
- * http://creativecommons.org/publicdomain/zero/1.0/
- */
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -34,7 +19,9 @@ G_DEFINE_TYPE (GbWebView, gb_webview, G_TYPE_OBJECT)
 
 struct _GbWebViewPrivate {
     WebKitWebView *webView;
-    int pages;
+    GSimpleAsyncResult *result;
+
+    gchar* output_JS;
 };
 
 enum
@@ -177,16 +164,14 @@ gb_webview_set_property (GObject      *object,
                          const GValue *value,
                          GParamSpec   *pspec)
 {
-    GbWebView *self = GB_WEBVIEW (object);
+    //GbWebView *self = GB_WEBVIEW (object);
 
     switch (property_id) {
-    case PROP_WEBVIEW:
-        //g_free (priv->webView);
-        
-    break;
+    case PROP_WEBVIEW:        
+      break;
     default:
-        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-        break;
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
     }
 }
 
@@ -231,7 +216,7 @@ gb_webview_init (GbWebView* self)
     priv = self->priv;
 
     priv->webView = WEBKIT_WEB_VIEW(webkit_web_view_new());
-    priv->pages = -1;
+    priv->output_JS = NULL;
 
     WebKitSettings *s = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(priv->webView));
     
@@ -248,8 +233,6 @@ gb_webview_init (GbWebView* self)
 
     webkit_web_view_set_settings(WEBKIT_WEB_VIEW(priv->webView), s);
 
-    //g_signal_connect(mainWindow, "destroy", G_CALLBACK(gb_destroy_windowCb), NULL);
-    //g_signal_connect(webView, "close", G_CALLBACK(gb_close_WebViewCb), mainWindow);
     g_signal_connect(priv->webView, "load-changed", G_CALLBACK(gb_webkit_load_changed), NULL);
     g_signal_connect(priv->webView, "load-failed", G_CALLBACK(gb_webkit_load_failed), NULL);
     g_signal_connect(priv->webView, "web-process-crashed", G_CALLBACK(gb_webkit_process_crashed), NULL);
@@ -262,19 +245,18 @@ gb_webview_init (GbWebView* self)
 
 
 void
-gb_web_view_finished_JS      (GObject*      self,
+gb_web_view_finished_JS      (GObject*      webView,
                               GAsyncResult  *result,
                               gpointer      user_data)
 {
-    //WebKitWebView* webView;
-    //webView = self->priv->webView;
+    GbWebView* self = user_data;
 
     WebKitJavascriptResult *js_result;
     JSValueRef              value;
     JSGlobalContextRef      context;
     GError                 *error = NULL;
 
-    js_result = webkit_web_view_run_javascript_finish (WEBKIT_WEB_VIEW(self), result, &error);
+    js_result = webkit_web_view_run_javascript_finish (WEBKIT_WEB_VIEW(webView), result, &error);
     if (!js_result) {
         g_warning ("Error running javascript: %s", error->message);
         g_error_free (error);
@@ -293,11 +275,19 @@ gb_web_view_finished_JS      (GObject*      self,
         str_value = (gchar *)g_malloc (str_length);
         JSStringGetUTF8CString (js_str_value, str_value, str_length);
         JSStringRelease (js_str_value);
-        user_data = str_value;
-        g_print ("----------------- Script result: %s\n", user_data);
+
+        self->priv->output_JS = strdup(str_value);
+        g_print ("----------------- Script result: %s\n", self->priv->output_JS);
+
+        g_simple_async_result_set_op_res_gpointer (self->priv->result, self->priv->output_JS, NULL);
+        g_simple_async_result_complete_in_idle (self->priv->result);
+
         g_free (str_value);
+        g_object_unref (self->priv->result);
     } else {
         g_warning ("Error running javascript: unexpected return value");
+        g_simple_async_result_take_error (self->priv->result, error);
+        g_simple_async_result_complete_in_idle (self->priv->result);
     }
     webkit_javascript_result_unref (js_result);
 }
@@ -316,21 +306,6 @@ gb_webview_get_view (GbWebView *self)
     g_return_val_if_fail (GB_IS_WEBVIEW (self), NULL);
 
     return self->priv->webView;
-}
-
-/**
-* gb_webview_get_pages:
-*
-* Returns the number of pages.
-*
-* Returns: (transfer none): value #int.
-*/
-int      
-gb_webview_get_pages (GbWebView *self)
-{
-    g_return_val_if_fail (GB_IS_WEBVIEW (self), NULL);
-
-    return self->priv->pages;
 }
 
 void
@@ -353,27 +328,41 @@ gb_webview_run_JS (GbWebView* self,
     webkit_web_view_run_javascript (webView, load_command, NULL, NULL, NULL);
 }
 
+/**
+ * gb_webview_run_JS_return:
+ * @self:
+ * @load_command:
+ * @callback:
+ * @user_data:
+ */
 void
 gb_webview_run_JS_return (GbWebView* self, 
-                          gchar*     load_command)
+                          gchar*     load_command,
+                          GAsyncReadyCallback callback,
+                          gpointer user_data)
 {
-    WebKitWebView* webView;
-    gpointer user_data;
+    self->priv->result = g_simple_async_result_new (NULL, callback, user_data,
+                                                    gb_webview_run_JS_return);
 
-    webView = self->priv->webView;
-    webkit_web_view_run_javascript (webView, load_command, NULL, gb_web_view_finished_JS, user_data);
-    //self->priv->pages = (int*)user_data;
-    self->priv->pages = 1013;
+    webkit_web_view_run_javascript (self->priv->webView, load_command, NULL, gb_web_view_finished_JS, self);
+    
 }
 
-void
-gb_webview_load_book (gchar* path)
+/**
+ * gb_webview_output_JS_finish:
+ * @res:
+ * @error: (allow-none) (out):
+ *
+ * Returns: (transfer full):
+ */
+gchar*
+gb_webview_output_JS_finish (GAsyncResult *res,
+                             GError **error)
 {
-    GError *error = NULL;
-    GFile *file = NULL;
-    file = g_file_new_for_path (path);
+  if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (res), error))
+    return NULL;
 
-    GFileInputStream *strm = g_file_read (file, NULL, &error);
+  return g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (res));
 }
 
 /**
@@ -392,7 +381,7 @@ gb_webview_new ()
                          "books-view",
                          NULL);
 
-    return self;
+    return WEBKIT_WEB_VIEW(self);
 }
 /*
 void 

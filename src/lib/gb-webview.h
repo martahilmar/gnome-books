@@ -1,18 +1,3 @@
-/* -*- Mode: c; c-basic-offset: 4 -*- 
- *
- * GOBject Introspection Tutorial 
- * 
- * Written in 2013 by Simon Kågedal Reimer <skagedal@gmail.com>
- *
- * To the extent possible under law, the author have dedicated all
- * copyright and related and neighboring rights to this software to
- * the public domain worldwide. This software is distributed without
- * any warranty.
- *
- * CC0 Public Domain Dedication:
- * http://creativecommons.org/publicdomain/zero/1.0/
- */
-
 #ifndef __GB_WEBVIEW_H__
 #define __GB_WEBVIEW_H__
 
@@ -44,21 +29,17 @@ struct _GbWebViewClass {
     GtkWidgetClass		parent_class;
 };
 
-GType			gb_webview_get_type		(void) G_GNUC_CONST;
+GType			gb_webview_get_type				(void) G_GNUC_CONST;
 
-WebKitWebView*	gb_webview_new			(void);
-WebKitWebView*	gb_webview_get_view		(GbWebView* self);
-void			gb_webview_register_URI	(GbWebView* self);
-/*void            gb_webview_register_URI (GbWebView *self,
-				                         GCancellable* cancellable,
-				                         GAsyncReadyCallback callback);*/
-void			gb_webview_run_JS		(GbWebView *self, gchar* load_command);
-void			gb_webview_load_book 	(gchar* path);
-void			gb_webview_run_JS_return (GbWebView* self,
-                				          gchar*     load_command);
-/*void			gb_webview_load_book 	(GbWebView* self,
-					                     const gchar* uri,
-					                     GCancellable* cancellable,
-					                     GAsyncReadyCallback callback);*/
-int 			gb_webview_get_pages 	(GbWebView *self);
+WebKitWebView*	gb_webview_new					(void);
+WebKitWebView*	gb_webview_get_view				(GbWebView* self);
+void			gb_webview_register_URI			(GbWebView* self);
+void			gb_webview_run_JS				(GbWebView *self, gchar* load_command);
+void            gb_webview_run_JS_return    	(GbWebView* self, 
+					                         	 gchar*     load_command,
+					                         	 GAsyncReadyCallback callback,
+					                         	 gpointer user_data);
+gchar*        	gb_webview_output_JS_finish 	(GAsyncResult *res,
+                                             	 GError **error);
+
 #endif /* __GB_WEBVIEW_H__ */

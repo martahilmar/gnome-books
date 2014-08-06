@@ -1,45 +1,47 @@
-gb_cflags =               \
+gbprivate_cflags =        \
   -I$(top_srcdir)/src     \
   -I$(top_srcdir)/lib
 
-gb_source_h =			    \
-  lib/gb-webview.h		\
+gbprivate_source_h =      \
+  lib/gb-webview.h        \
+  lib/gb-book-state.h     \
   $(NULL)
 
-gb_source_c =         	\
-  lib/gb-webview.c      \
-  lib/gb-resources.c    \
+gbprivate_source_c =       \
+  lib/gb-webview.c         \
+  lib/gb-book-state.c      \
+  lib/gb-resources.c       \
   $(NULL)
 
 # Defines the library to build.
-lib_LTLIBRARIES += libgbWebView-1.0.la
+lib_LTLIBRARIES += libgbprivate-1.0.la
 
-libgbWebView_1_0_la_LIBADD = $(DEPEND_LIBS)
-libgbWebView_1_0_la_LDFLAGS = -avoid-version
-libgbWebView_1_0_la_CPPFLAGS = $(gb_cflags)
-libgbWebView_1_0_la_SOURCES = \
-  $(gb_source_c) \
-  $(gb_source_h) \
+libgbprivate_1_0_la_LIBADD = $(DEPEND_LIBS)
+libgbprivate_1_0_la_LDFLAGS = -avoid-version
+libgbprivate_1_0_la_CPPFLAGS = $(gbprivate_cflags)
+libgbprivate_1_0_la_SOURCES = \
+  $(gbprivate_source_c) \
+  $(gbprivate_source_h) \
   $(NULL)
 
-INTROSPECTION_GIRS = Gb_1_0_gir
+INTROSPECTION_GIRS = GbPrivate_1_0_gir
 INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all
 INTROSPECTION_COMPILER_ARGS =
 
 if HAVE_INTROSPECTION
-introspection_sources = $(libgbWebView_1_0_la_SOURCES)
+introspection_sources = $(libgbprivate_1_0_la_SOURCES)
 
-INTROSPECTION_GIRS += Gb-1.0.gir
+INTROSPECTION_GIRS += GbPrivate-1.0.gir
 
-Gb-1.0.gir: libgbWebView-1.0.la Makefile
-Gb_1_0_gir_NAMESPACE = Gb
-Gb_1_0_gir_VERSION = 1.0
-Gb_1_0_gir_LIBS = libgbWebView-1.0.la
-Gb_1_0_gir_CFLAGS = $(AM_CPPFLAGS) $(gb_cflags)
-Gb_1_0_gir_SCANNERFLAGS = --warn-all --symbol-prefix=gb --identifier-prefix=Gb
-Gb_1_0_gir_INCLUDES = \
+GbPrivate-1.0.gir: libgbprivate-1.0.la Makefile
+GbPrivate_1_0_gir_NAMESPACE = GbPrivate
+GbPrivate_1_0_gir_VERSION = 1.0
+GbPrivate_1_0_gir_LIBS = libgbprivate-1.0.la
+GbPrivate_1_0_gir_CFLAGS = $(AM_CPPFLAGS) $(gbprivate_cflags)
+GbPrivate_1_0_gir_SCANNERFLAGS = --warn-all --symbol-prefix=gb --identifier-prefix=Gb
+GbPrivate_1_0_gir_INCLUDES = \
   GObject-2.0 \
   Gtk-3.0 \
   WebKit2-3.0
-Gb_1_0_gir_FILES = $(introspection_sources)
+GbPrivate_1_0_gir_FILES = $(introspection_sources)
 endif

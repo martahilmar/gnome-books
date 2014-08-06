@@ -20,7 +20,6 @@ const MainWindow = new Lang.Class({
     Name: 'MainWindow',
 
     _init: function(app) {
-        this._scrolledWindow = new Gtk.ScrolledWindow();
         this.window = new Gtk.ApplicationWindow({ application: app,
                                                   width_request: _WINDOW_MIN_WIDTH,
                                                   height_request: _WINDOW_MIN_HEIGHT,
@@ -28,8 +27,6 @@ const MainWindow = new Lang.Class({
                                                   title: "GNOME Books" });
         this._initSignals();
         this._restoreWindowGeometry();
-        this.window.add(this._scrolledWindow);
-        this.window.set_position(Gtk.WindowPosition.CENTER);
 
         this.window.set_events(Gdk.EventMask.POINTER_MOTION_MASK);
 
@@ -40,8 +37,7 @@ const MainWindow = new Lang.Class({
         this._widget.pack_end(this._overlay, true, true, 0);
 
         this.webView = new WebView.WebView(app, this._overlay);
-        this._scrolledWindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER);
-        this._scrolledWindow.add(this._widget);
+        this.window.add(this._widget);
 
         this.window.show_all();
     },
@@ -52,10 +48,6 @@ const MainWindow = new Lang.Class({
                             this._onConfigureEvent.bind(this));
         this.window.connect('window-state-event',
                             this._onWindowStateEvent.bind(this));
-        this.window.connect('key-press-event',
-                            this._onKeyPressEvent.bind(this));
-
-        this._viewMovedId = 0;
     },
 
     _saveWindowGeometry: function() {
@@ -76,20 +68,23 @@ const MainWindow = new Lang.Class({
 
     _restoreWindowGeometry: function() {
         let size = Application.settings.get_value('window-size');
-        if (size.length === 2) {
-            let [width, height] = size;
-            this.window.set_default_size(width, height);
+        if (size.n_children() == 2) {
+            let width = size.get_child_value(0);
+            let height = size.get_child_value(1);
+
+            this.window.set_default_size(width.get_int32(), height.get_int32());
         }
 
         let position = Application.settings.get_value('window-position');
-        if (position.length === 2) {
-            let [x, y] = position;
+        if (position.n_children == 2) {
+            let x = position.get_child_value(0);
+            let y = position.get_child_value(1);
 
-            this.window.move(x, y);
+            this.window.move(x.get_int32(), y.get_int32());
         }
 
-        //if (Application.settings.get_value('window-maximized'))
-        //    this.window.maximize();
+        if (Application.settings.get_boolean('window-maximized'))
+            this.window.maximize();
     },
 
     _onConfigureEvent: function(widget, event) {
@@ -116,31 +111,13 @@ const MainWindow = new Lang.Class({
         Application.settings.set_boolean('window-maximized', maximized);
     },
 
-    _onKeyPressEvent: function(widget, event) {
-        let state = event.get_state()[1];
-
-        if (state & Gdk.ModifierType.CONTROL_MASK) {
-            let keyval = event.get_keyval()[1];
-
-            if (keyval === Gdk.KEY_plus)
-                this.mapView.view.zoom_in();
-
-            if (keyval === Gdk.KEY_minus)
-                this.mapView.view.zoom_out();
-        }
-
-        return false;
-    },
-
     _quit: function() {
         if (this._configureId !== 0) {
             Mainloop.source_remove(this._configureId);
             this._configureId = 0;
         }
 
-        //this._overlay.destroy();
         this._saveWindowGeometry();
-
         return false;
     }
 });
