@@ -5,11 +5,10 @@ const Gettext = imports.gettext;
 const _ = imports.gettext.gettext;
 
 // Import versions go here
-imports.gi.versions.Gd = '1.0';
 imports.gi.versions.WebKit = '3.0';
 imports.gi.versions.Gtk = '3.0';
 
-const Gb = imports.gi.Gb;
+const GbPrivate = imports.gi.GbPrivate;
 const Gdk = imports.gi.Gdk;
 const Gio = imports.gi.Gio;
 const Goa = imports.gi.Goa;

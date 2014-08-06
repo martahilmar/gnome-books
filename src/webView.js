@@ -11,7 +11,7 @@ const Lang = imports.lang;
 const Mainloop = imports.mainloop;
 const Tweener = imports.tweener.tweener;
 
-const Gb = imports.gi.Gb;
+const GbPrivate = imports.gi.GbPrivate;
 
 const _PREVIEW_NAVBAR_MARGIN = 30;
 const _AUTO_HIDE_TIMEOUT = 2;
@@ -42,14 +42,11 @@ const WebView = new Lang.Class ({
         this.loadTotalPageNum = new Gtk.Button ({label: 'Load Page Number'});
 
         // WebKit preview
-        this.web_view = new Gb.WebView();
+        this.web_view = new GbPrivate.WebView();
         this.web_view.register_URI (this.web_view);
 
-        //this._onLoadBook();
-
         this.loadBookButton.connect("clicked", Lang.bind (this, function () {
-            this.web_view.run_JS ("var Book = ePub('/epub.js/reader/moby-dick/', { width: 1076, height: 588 });");
-            this.web_view.run_JS ("var rendered = Book.renderTo('area').then(function(){});");
+            this._onLoadBook('/epub.js/reader/moby-dick/');
         }));
 
         this.loadTocButton.connect("clicked", Lang.bind (this, function () {
@@ -58,7 +55,8 @@ const WebView = new Lang.Class ({
 
         this.loadTotalPageNum.connect("clicked", Lang.bind(this, function () {
             this._onLoadTotalPageNum ();
-        }))
+        }));
+
         let view = this.web_view.get_view();
         // Settings
         let s = view.get_settings();
@@ -208,6 +206,11 @@ const WebView = new Lang.Class ({
         this._updateVisibility();
     },
 
+    _onLoadBook: function(path) {
+        this.web_view.run_JS ("var Book = ePub('" + path + "', { width: 1076, height: 588 });");
+        this.web_view.run_JS ("var rendered = Book.renderTo('area');");
+    },
+
     _onPrevClicked: function() {
         this.web_view.run_JS("Book.prevPage();");
     },
@@ -216,26 +219,33 @@ const WebView = new Lang.Class ({
         this.web_view.run_JS ("Book.nextPage();");
     },
 
-    _onLoadBook: function() {
-        this.web_view.load_book ("ex.html");
-    },
-
     _onLoadToc: function() {
         this.web_view.run_JS ("Book.ready.all.then(function(){ Book.generatePagination(); });");
+        /*
+        this.web_view.run_JS_return("function x() { Book.pageListReady.then(function()   \
+                                        { return 'true' }); }; x();", Lang.bind(this, 
+            function(src, res) {
+                var output = this.web_view.output_JS_finish(res);
+                log("----- JS output: " + output)
+            }));
+        */
     },
 
     _onLoadTotalPageNum: function() {
-        this.web_view.run_JS_return ("(Book.pagination.totalPages).toString();");
-        var n_pages = this.web_view.get_pages();
-        this._adjustment = new Gtk.Adjustment ({
-            value: 0,
-            lower: 0,
-            upper: n_pages,
-            step_increment: 5,
-            page_increment: 10 });
+        this.web_view.run_JS_return ("(Book.pagination.totalPages).toString();", Lang.bind(this,
+            function(src, res) {
+                var n_pages = this.web_view.output_JS_finish(res);
+                log("----- Total pages: " + n_pages);
 
-        this.bar_widget.adjustment = this._adjustment;
-        //log("----- Total pages: " + n_pages);
+                this._adjustment = new Gtk.Adjustment ({
+                    value: 0,
+                    lower: 0,
+                    upper: n_pages,
+                    step_increment: 5,
+                    page_increment: 10 });
+
+                this.bar_widget.adjustment = this._adjustment;
+            }));
     },
 
     _update_page: function() {
