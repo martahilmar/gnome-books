@@ -23,12 +23,7 @@ const WebView = new Lang.Class ({
     _initView: function(app, overlay) {
 
         this._overlay = overlay;
-
-        this._visible = false;
-        this._autoHideId = 0;
-        this._motionId = 0;
-        this._hover = false;
-
+        this._bookLoaded = false;
         //this._grid = new Gtk.Grid();
 
         var hbox = new Gtk.Box ({orientation: Gtk.Orientation.VERTICAL, spacing: 5});
@@ -41,8 +36,6 @@ const WebView = new Lang.Class ({
         // WebKit preview
         this._webView = new GbPrivate.WebView();
         this._webView.register_URI (this.web_view);
-
-        this._navControls = new PreviewNavControls(this._webView, this._overlay);
 
         this._loadBookButton.connect("clicked", Lang.bind (this, function () {
             this._onLoadBook('/epub.js/reader/moby-dick/');
@@ -66,13 +59,18 @@ const WebView = new Lang.Class ({
         s.enable_xss_auditor = false;
         view.set_settings(s);
 
+        this.bar_widget = new GbPrivate.NavBar({ margin: _PREVIEW_NAVBAR_MARGIN,
+                                                 valign: Gtk.Align.END,
+                                                 opacity: 0 });
+
+        this._navControls = new PreviewNavControls(this._webView, this._overlay, this.bar_widget);
         //this._grid.attach (view, 0, 0, 1, 1);
         //this._grid.attach (this.loadButton, 0, 1, 1, 1);
-        hbox.pack_start (view, true, true, 0);
-        vbox.pack_start (this._loadBookButton, false, false, 0);
-        vbox.pack_start (this._loadTocButton, false, false, 0);
-        vbox.pack_start (this._loadTotalPageNum, false, false, 0);
+        vbox.pack_start (this._loadBookButton, true, true, 0);
+        vbox.pack_start (this._loadTocButton, true, true, 0);
+        vbox.pack_start (this._loadTotalPageNum, true, true, 0);
         hbox.pack_start (vbox, false, false, 0);
+        hbox.pack_start (view, true, true, 0);
         vbox.set_homogeneous(true);
         this._overlay.add(hbox);
 
@@ -80,8 +78,12 @@ const WebView = new Lang.Class ({
     },
 
     _onLoadBook: function(path) {
-        this._webView.run_JS ("var Book = ePub('" + path + "', { width: 1076, height: 588 });");
-        this._webView.run_JS ("var rendered = Book.renderTo('area');");  
+        if (!this._bookLoaded)
+        {
+            this._bookLoaded = true;
+            this._webView.run_JS ("var Book = ePub('" + path + "', { width: 1076, height: 588 });");
+            this._webView.run_JS ("var rendered = Book.renderTo('area');");  
+        }
     },
 
     _onLoadToc: function() {
@@ -100,16 +102,9 @@ const WebView = new Lang.Class ({
         this._webView.run_JS_return ("(Book.pagination.totalPages).toString();", Lang.bind(this,
             function(src, res) {
                 var n_pages = this._webView.output_JS_finish(res);
-                log("----- Total pages: " + n_pages);
-
-                this._adjustment = new Gtk.Adjustment ({
-                    value: 0,
-                    lower: 0,
-                    upper: n_pages,
-                    step_increment: 5,
-                    page_increment: 10 });
-
-                this._navControls.bar_widget.adjustment = this._adjustment;
+                this.bar_widget.set_total_pages(n_pages);
+                this.bar_widget.set_current_page(1);
+                this._navControls.show();
             }));
     }
 });
@@ -120,18 +115,45 @@ const _AUTO_HIDE_TIMEOUT = 2;
 const PreviewNavControls = new Lang.Class({
     Name: 'NavConstrols',
 
-    _init: function(webView, overlay) {
+    _init: function(webView, overlay, barWidget) {
         // Create the horizontal scale
         this._overlay = overlay;
         this._webView = webView;
+        this.bar_widget = barWidget;
 
-        this.bar_widget = new Gtk.Scale();
-        this.bar_widget.set_valign (Gtk.Align.START);
-        this.bar_widget.set_value (0);
-        this.bar_widget.set_digits (0);
+        this._visible = false;
+        this._autoHideId = 0;
+        this._motionId = 0;
+        this._hover = false;
+
         this.bar_widget.get_style_context().add_class('osd');
         this._overlay.add_overlay(this.bar_widget);
-        this.bar_widget.connect ("value-changed", Lang.bind (this, this._update_page));
+        this.bar_widget.connect('notify::scale-changed', Lang.bind (this, this._onUpdatePage))
+        /*
+        this.bar_widget.connect('notify::hover', Lang.bind(this, function() {
+            if (this.bar_widget.hover)
+                this._onEnterNotify();
+            else
+                this._onLeaveNotify();
+        }));*/
+
+        let buttonArea = this.bar_widget.get_button_area();
+
+        let button = new Gtk.Button({ action_name: 'app.places',
+                                      child: new Gtk.Image({ icon_name: 'view-list-symbolic',
+                                                             pixel_size: 16 }),
+                                      valign: Gtk.Align.CENTER,
+                                      tooltip_text: ("Bookmarks")
+                                    });
+        buttonArea.pack_start(button, false, false, 0);
+
+        button = new Gtk.ToggleButton({ action_name: 'app.bookmark-page',
+                                        child: new Gtk.Image({ icon_name: 'bookmark-add-symbolic',
+                                                               pixel_size: 16 }),
+                                        valign: Gtk.Align.CENTER,
+                                        tooltip_text: ("Bookmark this page")
+                                      });
+        buttonArea.pack_start(button, false, false, 0);
 
         this.prev_widget = new Gtk.Button({ child: new Gtk.Image ({ icon_name: 'go-previous-symbolic',
                                                                     pixel_size: 16 }),
@@ -161,28 +183,24 @@ const PreviewNavControls = new Lang.Class({
     },
 
     _onEnterNotify: function() {
-        log("enter notify");
         this._hover = true;
         this._unqueueAutoHide();
         return false;
     },
 
     _onLeaveNotify: function() {
-        log("leave notify");
         this._hover = false;
         this._queueAutoHide();
         return false;
     },
 
     _motionTimeout: function() {
-        log("Motion Timeout");
         this._motionId = 0;
         this._updateVisibility();
         return false;
     },
 
     _onMotion: function() {
-        log("Overlay motion");
         if (this._motionId != 0) {
             return false;
         }
@@ -192,6 +210,7 @@ const PreviewNavControls = new Lang.Class({
     },
 
     _autoHide: function() {
+        this._fadeOutButton(this.bar_widget);
         this._fadeOutButton(this.prev_widget);
         this._fadeOutButton(this.next_widget);
         this._autoHideId = 0;
@@ -212,17 +231,30 @@ const PreviewNavControls = new Lang.Class({
     },
 
     _updateVisibility: function() {
+        var c_page = this.bar_widget.get_current_page();
+        var n_pages = this.bar_widget.get_total_pages();
+
         if (!this._visible) {
+            this._fadeOutButton(this.bar_widget);
             this._fadeOutButton(this.prev_widget);
             this._fadeOutButton(this.next_widget);
             return;
         }
 
-        this._fadeInButton(this.prev_widget);
-        this._fadeInButton(this.next_widget);
+        this._fadeInButton(this.bar_widget);
+/*
+        if (c_page > 1)
+            this._fadeInButton(this.prev_widget);
+        else
+            this._fadeOutButton(this.prev_widget);
 
-        if (!this._hover)
-            this._queueAutoHide();
+        if (n_pages > c_page + 1)
+            this._fadeInButton(this.next_widget);
+        else
+            this._fadeOutButton(this.next_widget);
+*/
+        //if (!this._hover)
+        //    this._queueAutoHide();
     },
 
     _fadeInButton: function(widget) {
@@ -253,15 +285,39 @@ const PreviewNavControls = new Lang.Class({
     },
 
     _onPrevClicked: function() {
-        this._webView.run_JS("Book.prevPage();");
+        var c_page = this.bar_widget.get_current_page();
+
+        if(c_page > 1)
+        {
+            this._webView.run_JS("Book.prevPage();");
+            this.bar_widget.update_page(c_page - 1);
+        }
     },
 
     _onNextClicked: function() {
-        this._webView.run_JS ("Book.nextPage();");
+        var c_page = this.bar_widget.get_current_page();
+        var n_pages = this.bar_widget.get_total_pages();
+        if(c_page + 1 < n_pages)
+        {
+            this._webView.run_JS ("Book.nextPage();");
+            this.bar_widget.update_page(c_page + 1);
+        }
     },
 
-    _update_page: function() {
-        var value = this.bar_widget.get_value();
-        this._webView.run_JS("Book.gotoPage(" + value + ");");
+    _onUpdatePage: function() {
+        var c_page = this.bar_widget.get_current_page();
+        this._webView.run_JS("Book.gotoPage(" + c_page + ");");
     }
 });
+
+/*        
+var page;
+this._webView.run_JS ("Book.nextPage();");
+this._webView.run_JS ("var currentLocation = Book.getCurrentLocationCfi();");
+this._webView.run_JS_return ("(Book.pagination.pageFromCfi(currentLocation)).toString();", Lang.bind(this,
+    function(src, res) {
+        page = this._webView.output_JS_finish(res);
+        log("-----" + page);
+        this.bar_widget.update_page(page);
+    }));
+*/

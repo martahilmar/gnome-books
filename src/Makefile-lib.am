@@ -4,13 +4,13 @@ gbprivate_cflags =        \
 
 gbprivate_source_h =      \
   lib/gb-webview.h        \
-  lib/gb-book-state.h     \
+  lib/gb-nav-bar.h        \
   $(NULL)
 
 gbprivate_source_c =       \
   lib/gb-webview.c         \
-  lib/gb-book-state.c      \
   lib/gb-resources.c       \
+  lib/gb-nav-bar.c         \  
   $(NULL)
 
 # Defines the library to build.
