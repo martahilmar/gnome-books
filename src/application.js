@@ -104,7 +104,8 @@ const Application = new Lang.Class({
         this._actionEntries = [
             { name: 'quit',
               callback: this._onActionQuit,
-              accel: '<Primary>q' }
+              accel: '<Primary>q' },
+            { name: 'show-contents'}
         ];
 
         this._initActions();

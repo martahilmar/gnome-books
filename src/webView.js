@@ -11,6 +11,8 @@ const Lang = imports.lang;
 const Mainloop = imports.mainloop;
 const Tweener = imports.tweener.tweener;
 
+const Application = imports.application;
+const Contents = imports.contents;
 const GbPrivate = imports.gi.GbPrivate;
 
 const WebView = new Lang.Class ({
@@ -42,7 +44,7 @@ const WebView = new Lang.Class ({
         }));
 
         this._loadTocButton.connect("clicked", Lang.bind (this, function () {
-            this._onLoadToc ();
+            this._onLoadPagination ();
         }));
 
         this._loadTotalPageNum.connect("clicked", Lang.bind(this, function () {
@@ -64,6 +66,10 @@ const WebView = new Lang.Class ({
                                                  opacity: 0 });
 
         this._navControls = new PreviewNavControls(this._webView, this._overlay, this.bar_widget);
+
+        let showContents = Application.application.lookup_action('show-contents');
+        showContents.connect('activate', Lang.bind(this, this._showContents));
+
         //this._grid.attach (view, 0, 0, 1, 1);
         //this._grid.attach (this.loadButton, 0, 1, 1, 1);
         vbox.pack_start (this._loadBookButton, true, true, 0);
@@ -82,11 +88,17 @@ const WebView = new Lang.Class ({
         {
             this._bookLoaded = true;
             this._webView.run_JS ("var Book = ePub('" + path + "', { width: 1076, height: 588 });");
-            this._webView.run_JS ("var rendered = Book.renderTo('area');");  
+            this._webView.run_JS ("var rendered = Book.renderTo('area');");
+            // Load Table of Contents
+            this._webView.run_JS ("Book.getToc().then(function(toc) {                               \
+                                        toc.forEach(function(chapter) {                             \
+                                            chapters += '%' + chapter.label + '=' + chapter.href;   \
+                                            console.log();                                          \
+                                        }); });"); 
         }
     },
 
-    _onLoadToc: function() {
+    _onLoadPagination: function() {
         this._webView.run_JS ("Book.ready.all.then(function(){ Book.generatePagination(); });");
         /*
         this._webView.run_JS_return("function x() { Book.pageListReady.then(function()   \
@@ -99,12 +111,28 @@ const WebView = new Lang.Class ({
     },
 
     _onLoadTotalPageNum: function() {
+        
         this._webView.run_JS_return ("(Book.pagination.totalPages).toString();", Lang.bind(this,
             function(src, res) {
                 var n_pages = this._webView.output_JS_finish(res);
                 this.bar_widget.set_total_pages(n_pages);
                 this.bar_widget.set_current_page(1);
                 this._navControls.show();
+            }));
+    },
+
+    _showContents: function() {
+        let toc;
+        this._webView.run_JS_return("function x() { return chapters } x();", Lang.bind(this,
+            function(src, res) {
+                //log(this._webView.output_JS_finish(res));
+                toc = this._webView.output_JS_finish(res);               
+
+                let dialog = new Contents.ContentsDialog(toc);
+                dialog.widget.connect('response', Lang.bind(this,
+                    function(widget, response) {
+                        widget.destroy();
+                    }));
             }));
     }
 });
@@ -139,19 +167,19 @@ const PreviewNavControls = new Lang.Class({
 
         let buttonArea = this.bar_widget.get_button_area();
 
-        let button = new Gtk.Button({ action_name: 'app.places',
-                                      child: new Gtk.Image({ icon_name: 'view-list-symbolic',
+        let tocButton = new Gtk.Button({ action_name: 'app.show-contents', 
+                                         child: new Gtk.Image({ icon_name: 'view-list-symbolic',
                                                              pixel_size: 16 }),
-                                      valign: Gtk.Align.CENTER,
-                                      tooltip_text: ("Bookmarks")
-                                    });
-        buttonArea.pack_start(button, false, false, 0);
+                                         valign: Gtk.Align.CENTER,
+                                         tooltip_text: ("Contents")
+                                       });
+        buttonArea.pack_start(tocButton, false, false, 0);
 
-        button = new Gtk.ToggleButton({ action_name: 'app.bookmark-page',
-                                        child: new Gtk.Image({ icon_name: 'bookmark-add-symbolic',
+        let button = new Gtk.ToggleButton({ action_name: 'app.bookmark-page',
+                                            child: new Gtk.Image({ icon_name: 'bookmark-add-symbolic',
                                                                pixel_size: 16 }),
-                                        valign: Gtk.Align.CENTER,
-                                        tooltip_text: ("Bookmark this page")
+                                            valign: Gtk.Align.CENTER,
+                                            tooltip_text: ("Bookmark this page")
                                       });
         buttonArea.pack_start(button, false, false, 0);
 
