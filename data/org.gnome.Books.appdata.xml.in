@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2013 Red Hat, Inc. -->
+<application>
+  <id type="desktop">org.gnome.Books.desktop</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0+</project_license>
+  <_name>Books</_name>
+  <_summary>A eBook manager application for GNOME</_summary>
+  <description>
+    <_p>
+      A simple application to readeBook on GNOME.
+    </_p>
+    <_p>It lets you:</_p>
+    <ul>
+      <_li>Read MobyDick</_li>
+    </ul>
+  </description>
+</application>

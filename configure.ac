@@ -61,6 +61,8 @@ AC_SUBST(top_builddir)
 
 AC_CONFIG_FILES([
 	Makefile
+  data/Makefile
+  libgd/Makefile
 	src/Makefile
 ])
 

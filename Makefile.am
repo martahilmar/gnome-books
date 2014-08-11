@@ -1,4 +1,4 @@
-ACLOCAL_AMFLAGS = -I m4 -I libgd
+ACLOCAL_AMFLAGS = -I m4 -I libgd ${ACLOCAL_FLAGS}
 DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
 SUBDIRS=libgd src
 

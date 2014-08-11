@@ -1,0 +1,12 @@
+[Desktop Entry]
+_Name=Books
+_Comment=Read eBooks
+Exec=gnome-books
+Icon=gnome-books
+Terminal=false
+Type=Application
+StartupNotify=true
+DBusActivatable=true
+OnlyShowIn=GNOME;
+Categories=GNOME;GTK;Utility;Core;
+_Keywords=Docs;PDF;Document;
