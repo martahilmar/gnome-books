@@ -1,6 +1,6 @@
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 -I libgd
 DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
-SUBDIRS=src
+SUBDIRS=libgd src
 
 MAINTAINERCLEANFILES = \
     $(srcdir)/AUTHORS \

@@ -41,6 +41,14 @@ BOOKS_CFLAGS="-Wall"
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 LT_INIT
 
+LIBGD_INIT([
+  gtk-hacks
+  main-view
+  notification
+  tagged-entry
+  gir
+])
+
 GJS_CONSOLE=`$PKG_CONFIG --variable=gjs_console gjs-1.0`
 AC_SUBST(GJS_CONSOLE)
 

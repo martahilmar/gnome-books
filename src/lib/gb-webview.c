@@ -277,7 +277,7 @@ gb_web_view_finished_JS      (GObject*      webView,
         JSStringRelease (js_str_value);
 
         self->priv->output_JS = strdup(str_value);
-        g_print ("----------------- Script result: %s\n", self->priv->output_JS);
+        //g_print ("----------------- Script result: %s\n", self->priv->output_JS);
 
         g_simple_async_result_set_op_res_gpointer (self->priv->result, self->priv->output_JS, NULL);
         g_simple_async_result_complete_in_idle (self->priv->result);

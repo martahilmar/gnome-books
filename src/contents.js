@@ -9,8 +9,9 @@ const WebKit = imports.gi.WebKit2;
 
 const Lang = imports.lang;
 const Mainloop = imports.mainloop;
-
 const Application = imports.application;
+
+const GbPrivate = imports.gi.GbPrivate;
 
 const ContentsDialog = new Lang.Class({
     Name: 'ContentsDialog',
@@ -22,6 +23,7 @@ const ContentsDialog = new Lang.Class({
 
     _createWindow: function(contents) {
         this._contents = contents;
+        this._bookLinks = new GbPrivate.BookLinks();
 
         let toplevel = Application.application.get_windows()[0];
         this.widget = new Gtk.Dialog ({ resizable: true,
@@ -47,15 +49,15 @@ const ContentsDialog = new Lang.Class({
         let link = this._contents.split("%");
 
         this._handleLink(link);
-        //this._addPage(this._linksPage);
+        this._addPage(this._bookLinks);
     },
 
     _handleLink: function(link) {
         link.forEach(Lang.bind(this,
             function(value) {
-                this._message = new Gtk.Label ({label: value});
-                this._contentArea.add (this._message);
+                this._bookLinks.fill_model (value, "0");
             }));
+        this._bookLinks.set_model();
     },
 
     _gotoDest: function(dest) {

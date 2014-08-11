@@ -93,7 +93,6 @@ const WebView = new Lang.Class ({
             this._webView.run_JS ("Book.getToc().then(function(toc) {                               \
                                         toc.forEach(function(chapter) {                             \
                                             chapters += '%' + chapter.label + '=' + chapter.href;   \
-                                            console.log();                                          \
                                         }); });"); 
         }
     },

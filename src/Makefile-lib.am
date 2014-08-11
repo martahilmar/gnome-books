@@ -1,22 +1,27 @@
-gbprivate_cflags =        \
-  -I$(top_srcdir)/src     \
+gbprivate_cflags =          \
+  -I$(top_srcdir)/src       \
+  -I$(top_srcdir)/libgd     \
   -I$(top_srcdir)/lib
 
-gbprivate_source_h =      \
-  lib/gb-webview.h        \
-  lib/gb-nav-bar.h        \
+gbprivate_source_h =        \
+  lib/gb-webview.h          \
+  lib/gb-nav-bar.h          \
+  lib/gb-book-links.h       \
   $(NULL)
 
-gbprivate_source_c =       \
-  lib/gb-webview.c         \
-  lib/gb-resources.c       \
-  lib/gb-nav-bar.c         \  
+gbprivate_source_c =        \
+  lib/gb-webview.c          \
+  lib/gb-resources.c        \
+  lib/gb-nav-bar.c          \
+  lib/gb-book-links.c       \
   $(NULL)
 
 # Defines the library to build.
 lib_LTLIBRARIES += libgbprivate-1.0.la
 
-libgbprivate_1_0_la_LIBADD = $(DEPEND_LIBS)
+libgbprivate_1_0_la_LIBADD =        \
+  $(DEPEND_LIBS)                    \
+  $(top_builddir)/libgd/libgd.la
 libgbprivate_1_0_la_LDFLAGS = -avoid-version
 libgbprivate_1_0_la_CPPFLAGS = $(gbprivate_cflags)
 libgbprivate_1_0_la_SOURCES = \
