@@ -22,9 +22,6 @@ const ContentsDialog = new Lang.Class({
     },
 
     _createWindow: function(contents) {
-        this._contents = contents;
-        this._bookLinks = new GbPrivate.BookLinks();
-
         let toplevel = Application.application.get_windows()[0];
         this.widget = new Gtk.Dialog ({ resizable: true,
                                         transient_for: toplevel,
@@ -46,16 +43,31 @@ const ContentsDialog = new Lang.Class({
 
         //header.set_custom_title(switcher);
 
-        let link = this._contents.split("%");
+        this._contents = contents;
+        this._bookLinks = new GbPrivate.BookLinks();
+        this._bookLinks.connect('link-activated', Lang.bind(this,
+            function(widget, link) {
+                log("link: " + link);
+                this._handleLink(link);
+            }));
+        let content = this._contents.split("%");
 
-        this._handleLink(link);
+        this._makeContents(content);
         this._addPage(this._bookLinks);
     },
 
     _handleLink: function(link) {
-        link.forEach(Lang.bind(this,
+        this.widget.response(Gtk.ResponseType.DELETE_EVENT);
+    },
+
+    _makeContents: function(content) {
+        content.forEach(Lang.bind(this,
             function(value) {
-                this._bookLinks.fill_model (value, "0");
+                if(value)
+                {
+                    let contentSplit = value.split("=");
+                    this._bookLinks.fill_model (contentSplit[0], contentSplit[1]);
+                }
             }));
         this._bookLinks.set_model();
     },
