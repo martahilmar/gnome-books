@@ -12,6 +12,8 @@ GOBJECT_INTROSPECTION_REQUIRE([0.9.6])
 AM_INIT_AUTOMAKE([1.10 no-define foreign dist-xz no-dist-gzip subdir-objects])
 AM_MAINTAINER_MODE([enable])
 
+IT_PROG_INTLTOOL([0.40.0])
+
 AC_PROG_CC
 AC_LANG_C
 AM_PROG_CC_C_O
@@ -59,11 +61,14 @@ AC_SUBST(DEPEND_LIBS)
 top_builddir=`pwd`
 AC_SUBST(top_builddir)
 
+GLIB_GSETTINGS
+
 AC_CONFIG_FILES([
 	Makefile
   data/Makefile
   libgd/Makefile
 	src/Makefile
+  po/Makefile.in
 ])
 
 AC_OUTPUT
