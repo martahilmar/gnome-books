@@ -239,7 +239,7 @@ gb_book_links_class_init (GbBookLinksClass *klass)
                                             0,
                                             NULL, NULL,
                                             g_cclosure_marshal_VOID__OBJECT,
-                                            G_TYPE_NONE, 1, G_TYPE_OBJECT);
+                                            G_TYPE_NONE, 1, G_TYPE_STRING);
     
     g_object_class_override_property (oclass, PROP_NAME, "name");
 

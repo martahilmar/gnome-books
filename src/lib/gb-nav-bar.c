@@ -375,7 +375,7 @@ gb_nav_bar_set_current_page (GbNavBar *bar,
   }
   
   bar->priv->current_page = curr_page_num;
-  //g_object_notify (G_OBJECT (self), "current-number");  
+  //g_object_notify (G_OBJECT (self), "current-number");
 }
 
 void

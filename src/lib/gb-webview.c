@@ -30,6 +30,13 @@ enum
     PROP_WEBVIEW
 };
 
+enum {
+    MOVE_CURSOR,
+    N_SIGNALS
+};
+
+static guint signals[N_SIGNALS];
+
 void
 gb_webkit_load_changed (WebKitWebView  *web_view,
                         WebKitLoadEvent load_event,
@@ -121,6 +128,14 @@ gb_request_cb (WebKitURISchemeRequest *request,
     g_object_unref (file);
 }
 
+static gboolean
+emit_move_cursor (GbWebView *self)
+{
+    g_signal_emit (self, signals[MOVE_CURSOR], 0);
+
+    return FALSE;
+}
+
 void
 gb_register_uri ()
 {
@@ -131,12 +146,10 @@ gb_register_uri ()
     webkit_security_manager_register_uri_scheme_as_cors_enabled (security, "book");
 }
 
-gboolean
+void
 gb_load (gpointer pointer)
-{   
+{
     webkit_web_view_load_uri (WEBKIT_WEB_VIEW (pointer), "book:");
-
-    return FALSE;
 }
 
 static void
@@ -176,6 +189,16 @@ gb_webview_set_property (GObject      *object,
 }
 
 static void
+gb_webview_dispose (GObject *object)
+{
+  GbWebView *self = GB_WEBVIEW (object);
+
+  g_clear_object (&self->priv->webView);
+
+  G_OBJECT_CLASS (gb_webview_parent_class)->dispose (object);
+}
+
+static void
 gb_webview_finalize (GObject *object)
 {
     GbWebView *self = GB_WEBVIEW (object);
@@ -193,6 +216,7 @@ gb_webview_class_init (GbWebViewClass *class)
     object_class->get_property = gb_webview_get_property;
     object_class->set_property = gb_webview_set_property;
     object_class->finalize = gb_webview_finalize;
+    object_class->dispose = gb_webview_dispose;
 
     g_object_class_install_property (object_class,
                                      PROP_WEBVIEW,
@@ -204,11 +228,18 @@ gb_webview_class_init (GbWebViewClass *class)
                                                           G_PARAM_READWRITE |
                                                           G_PARAM_STATIC_STRINGS));
 
+    signals[MOVE_CURSOR] = g_signal_new ("move-cursor",
+                                          GB_WEBVIEW_TYPE,
+                                          G_SIGNAL_RUN_LAST,
+                                          NULL, NULL, NULL,
+                                          g_cclosure_marshal_VOID__VOID,
+                                          G_TYPE_NONE, 0, NULL);
+
     g_type_class_add_private (object_class, sizeof (GbWebViewPrivate));
 }
 
 static void
-gb_webview_init (GbWebView* self)
+gb_webview_init (GbWebView *self)
 {
     GbWebViewPrivate* priv;
 
@@ -237,6 +268,7 @@ gb_webview_init (GbWebView* self)
     g_signal_connect(priv->webView, "load-failed", G_CALLBACK(gb_webkit_load_failed), NULL);
     g_signal_connect(priv->webView, "web-process-crashed", G_CALLBACK(gb_webkit_process_crashed), NULL);
     g_signal_connect(priv->webView, "insecure-content-detected", G_CALLBACK(gb_webkit_insecure_content_detected), NULL);
+    //g_signal_connect(priv->webView, "motion-notify-event", G_CALLBACK (emit_move_cursor), NULL);
 
     // Make sure that when the browser area becomes visible, it will get mouse
     // and keyboard events
@@ -245,7 +277,7 @@ gb_webview_init (GbWebView* self)
 
 
 void
-gb_web_view_finished_JS      (GObject*      webView,
+gb_web_view_finished_JS      (GObject      *webView,
                               GAsyncResult  *result,
                               gpointer      user_data)
 {
@@ -319,8 +351,8 @@ gb_webview_register_URI (GbWebView *self)
 }
 
 void
-gb_webview_run_JS (GbWebView* self, 
-                   gchar*     load_command)
+gb_webview_run_JS (GbWebView *self,
+                   gchar     *load_command)
 {
     WebKitWebView* webView;
     
@@ -336,8 +368,8 @@ gb_webview_run_JS (GbWebView* self,
  * @user_data:
  */
 void
-gb_webview_run_JS_return (GbWebView* self, 
-                          gchar*     load_command,
+gb_webview_run_JS_return (GbWebView *self,
+                          gchar     *load_command,
                           GAsyncReadyCallback callback,
                           gpointer user_data)
 {

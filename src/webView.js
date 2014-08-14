@@ -65,7 +65,7 @@ const WebView = new Lang.Class ({
                                                  valign: Gtk.Align.END,
                                                  opacity: 0 });
 
-        this._navControls = new PreviewNavControls(this._webView, this._overlay, this.bar_widget);
+        this._navControls = new ReadNavControls(this._webView, this._overlay, this.bar_widget);
 
         let showContents = Application.application.lookup_action('show-contents');
         showContents.connect('activate', Lang.bind(this, this._showContents));
@@ -110,7 +110,6 @@ const WebView = new Lang.Class ({
     },
 
     _onLoadTotalPageNum: function() {
-        
         this._webView.run_JS_return ("(Book.pagination.totalPages).toString();", Lang.bind(this,
             function(src, res) {
                 var n_pages = this._webView.output_JS_finish(res);
@@ -124,10 +123,9 @@ const WebView = new Lang.Class ({
         let toc;
         this._webView.run_JS_return("function x() { return chapters } x();", Lang.bind(this,
             function(src, res) {
-                //log(this._webView.output_JS_finish(res));
-                toc = this._webView.output_JS_finish(res);               
+                toc = this._webView.output_JS_finish(res);
 
-                let dialog = new Contents.ContentsDialog(toc);
+                let dialog = new Contents.ContentsDialog(toc, this._navControls);
                 dialog.widget.connect('response', Lang.bind(this,
                     function(widget, response) {
                         widget.destroy();
@@ -139,8 +137,8 @@ const WebView = new Lang.Class ({
 const _PREVIEW_NAVBAR_MARGIN = 30;
 const _AUTO_HIDE_TIMEOUT = 2;
 
-const PreviewNavControls = new Lang.Class({
-    Name: 'NavConstrols',
+const ReadNavControls = new Lang.Class({
+    Name: 'ReadNavControls',
 
     _init: function(webView, overlay, barWidget) {
         // Create the horizontal scale
@@ -205,8 +203,13 @@ const PreviewNavControls = new Lang.Class({
         this.next_widget.connect('clicked', Lang.bind(this, this._onNextClicked));
         //this.next_widget.connect('enter-notify-event', Lang.bind(this, this._onEnterNotify));
         //this.next_widget.connect('leave-notify-event', Lang.bind(this, this._onLeaveNotify));
-
-        //this._overlay.connect('motion-notify-event', Lang.bind(this, this._onMotion));
+        
+        //this._overlay.connect('motion-notify-event', Lang.bind(this, this._onMotion))
+        /*
+        this._webView.connect('move-cursor', Lang.bind(this,
+            function(widget, link) {
+                this._onMotion();
+            }));*/
     },
 
     _onEnterNotify: function() {
@@ -260,14 +263,14 @@ const PreviewNavControls = new Lang.Class({
     _updateVisibility: function() {
         var c_page = this.bar_widget.get_current_page();
         var n_pages = this.bar_widget.get_total_pages();
-
+/*
         if (!this._visible) {
             this._fadeOutButton(this.bar_widget);
             this._fadeOutButton(this.prev_widget);
             this._fadeOutButton(this.next_widget);
             return;
         }
-
+*/
         this._fadeInButton(this.bar_widget);
 /*
         if (c_page > 1)
@@ -282,6 +285,7 @@ const PreviewNavControls = new Lang.Class({
 */
         //if (!this._hover)
         //    this._queueAutoHide();
+        
     },
 
     _fadeInButton: function(widget) {
@@ -334,17 +338,15 @@ const PreviewNavControls = new Lang.Class({
     _onUpdatePage: function() {
         var c_page = this.bar_widget.get_current_page();
         this._webView.run_JS("Book.gotoPage(" + c_page + ");");
+    },
+
+    handleLink: function(link) {
+        this._webView.run_JS ("Book.goto('" + link + "')");
+        this._webView.run_JS ("var currentLocation = Book.getCurrentLocationCfi();");
+        this._webView.run_JS_return ("(Book.pagination.pageFromCfi(currentLocation)).toString();", Lang.bind(this,
+            function(src, res) {
+                var page = this._webView.output_JS_finish(res);
+                this.bar_widget.update_page(page);
+            }));
     }
 });
-
-/*        
-var page;
-this._webView.run_JS ("Book.nextPage();");
-this._webView.run_JS ("var currentLocation = Book.getCurrentLocationCfi();");
-this._webView.run_JS_return ("(Book.pagination.pageFromCfi(currentLocation)).toString();", Lang.bind(this,
-    function(src, res) {
-        page = this._webView.output_JS_finish(res);
-        log("-----" + page);
-        this.bar_widget.update_page(page);
-    }));
-*/
