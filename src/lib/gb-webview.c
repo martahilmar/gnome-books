@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <gtk/gtk.h>
+#include <limits.h>
 
 #include <webkit2/webkit2.h>
 #include <JavaScriptCore/JavaScript.h>
@@ -128,12 +129,12 @@ gb_request_cb (WebKitURISchemeRequest *request,
     g_object_unref (file);
 }
 
-static gboolean
-emit_move_cursor (GbWebView *self)
+void
+emit_move_cursor (GtkWidget *widget,
+                  GdkEvent  *event,
+                  GbWebView  *self)
 {
     g_signal_emit (self, signals[MOVE_CURSOR], 0);
-
-    return FALSE;
 }
 
 void
@@ -231,7 +232,7 @@ gb_webview_class_init (GbWebViewClass *class)
     signals[MOVE_CURSOR] = g_signal_new ("move-cursor",
                                           GB_WEBVIEW_TYPE,
                                           G_SIGNAL_RUN_LAST,
-                                          NULL, NULL, NULL,
+                                          0, NULL, NULL,
                                           g_cclosure_marshal_VOID__VOID,
                                           G_TYPE_NONE, 0, NULL);
 
@@ -268,7 +269,7 @@ gb_webview_init (GbWebView *self)
     g_signal_connect(priv->webView, "load-failed", G_CALLBACK(gb_webkit_load_failed), NULL);
     g_signal_connect(priv->webView, "web-process-crashed", G_CALLBACK(gb_webkit_process_crashed), NULL);
     g_signal_connect(priv->webView, "insecure-content-detected", G_CALLBACK(gb_webkit_insecure_content_detected), NULL);
-    //g_signal_connect(priv->webView, "motion-notify-event", G_CALLBACK (emit_move_cursor), NULL);
+    g_signal_connect(priv->webView, "motion-notify-event", G_CALLBACK (emit_move_cursor), self);
 
     // Make sure that when the browser area becomes visible, it will get mouse
     // and keyboard events
@@ -347,7 +348,7 @@ gb_webview_register_URI (GbWebView *self)
     
     webView = self->priv->webView;
     gb_register_uri ();
-    g_idle_add(gb_load, webView);
+    g_idle_add((GSourceFunc) gb_load, webView);
 }
 
 void
@@ -415,11 +416,3 @@ gb_webview_new ()
 
     return WEBKIT_WEB_VIEW(self);
 }
-/*
-void 
-gb_close_WebViewCb (WebKitWebView*  webView, 
-                    GtkWidget*      window)
-{
-    printf("Bye bye\n");
-    gtk_widget_destroy(window);
-} */

@@ -154,13 +154,13 @@ const ReadNavControls = new Lang.Class({
         this.bar_widget.get_style_context().add_class('osd');
         this._overlay.add_overlay(this.bar_widget);
         this.bar_widget.connect('notify::scale-changed', Lang.bind (this, this._onUpdatePage))
-        /*
+        
         this.bar_widget.connect('notify::hover', Lang.bind(this, function() {
             if (this.bar_widget.hover)
                 this._onEnterNotify();
             else
                 this._onLeaveNotify();
-        }));*/
+        }));
 
         let buttonArea = this.bar_widget.get_button_area();
 
@@ -189,8 +189,8 @@ const ReadNavControls = new Lang.Class({
         this.prev_widget.get_style_context().add_class('osd');
         this._overlay.add_overlay(this.prev_widget);
         this.prev_widget.connect('clicked', Lang.bind(this, this._onPrevClicked));
-        //this.prev_widget.connect('enter-notify-event', Lang.bind(this, this._onEnterNotify));
-        //this.prev_widget.connect('leave-notify-event', Lang.bind(this, this._onLeaveNotify));
+        this.prev_widget.connect('enter-notify-event', Lang.bind(this, this._onEnterNotify));
+        this.prev_widget.connect('leave-notify-event', Lang.bind(this, this._onLeaveNotify));
 
         this.next_widget = new Gtk.Button({ child: new Gtk.Image ({ icon_name: 'go-next-symbolic',
                                                                     pixel_size: 16 }),
@@ -201,15 +201,15 @@ const ReadNavControls = new Lang.Class({
         this.next_widget.get_style_context().add_class('osd');
         this._overlay.add_overlay(this.next_widget);
         this.next_widget.connect('clicked', Lang.bind(this, this._onNextClicked));
-        //this.next_widget.connect('enter-notify-event', Lang.bind(this, this._onEnterNotify));
-        //this.next_widget.connect('leave-notify-event', Lang.bind(this, this._onLeaveNotify));
+        this.next_widget.connect('enter-notify-event', Lang.bind(this, this._onEnterNotify));
+        this.next_widget.connect('leave-notify-event', Lang.bind(this, this._onLeaveNotify));
         
-        //this._overlay.connect('motion-notify-event', Lang.bind(this, this._onMotion))
-        /*
+        this._overlay.connect('motion-notify-event', Lang.bind(this, this._onMotion))
+        
         this._webView.connect('move-cursor', Lang.bind(this,
             function(widget, link) {
                 this._onMotion();
-            }));*/
+            }));
     },
 
     _onEnterNotify: function() {
@@ -263,16 +263,16 @@ const ReadNavControls = new Lang.Class({
     _updateVisibility: function() {
         var c_page = this.bar_widget.get_current_page();
         var n_pages = this.bar_widget.get_total_pages();
-/*
+
         if (!this._visible) {
             this._fadeOutButton(this.bar_widget);
             this._fadeOutButton(this.prev_widget);
             this._fadeOutButton(this.next_widget);
             return;
         }
-*/
+
         this._fadeInButton(this.bar_widget);
-/*
+
         if (c_page > 1)
             this._fadeInButton(this.prev_widget);
         else
@@ -281,10 +281,10 @@ const ReadNavControls = new Lang.Class({
         if (n_pages > c_page + 1)
             this._fadeInButton(this.next_widget);
         else
-            this._fadeOutButton(this.next_widget);
-*/
-        //if (!this._hover)
-        //    this._queueAutoHide();
+        this._fadeOutButton(this.next_widget);
+
+        if (!this._hover)
+            this._queueAutoHide();
         
     },
 
@@ -328,7 +328,7 @@ const ReadNavControls = new Lang.Class({
     _onNextClicked: function() {
         var c_page = this.bar_widget.get_current_page();
         var n_pages = this.bar_widget.get_total_pages();
-        if(c_page + 1 < n_pages)
+        if(c_page + 1 < n_pages || n_pages == 0)
         {
             this._webView.run_JS ("Book.nextPage();");
             this.bar_widget.update_page(c_page + 1);
@@ -341,7 +341,7 @@ const ReadNavControls = new Lang.Class({
     },
 
     handleLink: function(link) {
-        this._webView.run_JS ("Book.goto('" + link + "')");
+        this._webView.run_JS ("Book.goto('" + link + "');");
         this._webView.run_JS ("var currentLocation = Book.getCurrentLocationCfi();");
         this._webView.run_JS_return ("(Book.pagination.pageFromCfi(currentLocation)).toString();", Lang.bind(this,
             function(src, res) {
