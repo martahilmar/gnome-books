@@ -16,7 +16,7 @@ The idea is to integrate Books with an existing online eBook store.
     $ ./autogen
     $ make
     $ sudo make install
-    $ export LD_LIBRARY_PATH=`pwd`/src/lib/.libs:$LD_LIBRARY_PATH
+    $ export LD_LIBRARY_PATH=`pwd`/src/.libs:$LD_LIBRARY_PATH
     $ export GI_TYPELIB_PATH=`pwd`/src
 
 ## 2. Running GNOME Books
