@@ -1,15 +1,15 @@
 # GNOME Books
 
-Google Summer of Code project for GNOME
+Google Summer of Code project for GNOME.
 
-gnome-books is application for listing, searching and reading eBooks.
+Books is application for listing, searching and reading eBooks.
+More information on https://wiki.gnome.org/Outreach/SummerOfCode/2014/Projects/MartaMilakovic_GnomeBooks
 
-The idea is to integrate gnome-books with an existing online eBook store.
-
-gnome-books will be implemented upon the application gnome-documents, and it is going to live in the same git repository. This would be a great solution regarding code duplication, because it would be possible to reuse relevant code blocks from gnome-documents and add extra features related to eBooks.
+Books will be implemented upon the application gnome-documents, and it is going to live in the same git repository. This would be a great solution regarding code duplication, because it would be possible to reuse relevant code blocks from gnome-documents and add extra features related to eBooks.
 
 Using epub.js library for the reading mode.
 
+The idea is to integrate Books with an existing online eBook store.
 
 ## 1. Installing GNOME Books
 
