@@ -192,20 +192,12 @@ gb_webview_set_property (GObject      *object,
 static void
 gb_webview_dispose (GObject *object)
 {
-  GbWebView *self = GB_WEBVIEW (object);
-
-  g_clear_object (&self->priv->webView);
-
   G_OBJECT_CLASS (gb_webview_parent_class)->dispose (object);
 }
 
 static void
 gb_webview_finalize (GObject *object)
 {
-    GbWebView *self = GB_WEBVIEW (object);
-    GbWebViewPrivate *priv = GB_WEBVIEW_GET_PRIVATE (self->priv);
-
-    g_free (priv->webView);
     G_OBJECT_CLASS (gb_webview_parent_class)->finalize (object);
 }
 
