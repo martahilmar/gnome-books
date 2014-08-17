@@ -98,7 +98,11 @@ const WebView = new Lang.Class ({
     },
 
     _onLoadPagination: function() {
-        this._webView.run_JS ("Book.ready.all.then(function(){ Book.generatePagination(); });");
+        this._webView.run_JS ("Book.ready.all.then(function(){ Book.generatePagination();           \
+                                Book.pageListReady.then(function(pageList) {                        \
+                                    $('.notify-bar').show().addClass('notify-bar-height-change');   \
+                                    setTimeout(function () { $('.notify-bar').hide(); }, 3000);     \
+                                  }); });");
         /*
         this._webView.run_JS_return("function x() { Book.pageListReady.then(function()   \
                                         { return 'true' }); }; x();", Lang.bind(this, 

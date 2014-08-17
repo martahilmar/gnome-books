@@ -37,117 +37,76 @@
 
         <style type="text/css">
 
-          body {
+            body {
 
-          }
+            }
 
-          #main {
-            /*position: absolute;*/
-            width: 100%;
-            height: 100%;
-            /* overflow: hidden; */
-          }
+            #main {
+                /*position: absolute;*/
+                width: 100%;
+                height: 100%;
+                /* overflow: hidden; */
+            }
 
-          #area {
-            width: 80%;
-            height: 80%;
-            margin: 5% auto;
-            max-width: 1250px;
-          }
+            #area {
+                width: 80%;
+                height: 80%;
+                margin: 5% auto;
+                max-width: 1250px;
+            }
 
-          #area iframe {
-            border: none;
-          }
+            #area iframe {
+                border: none;
+            }
 
-          #controls {
-            position: absolute;
-            bottom: 16px;
-            left: 50%;
-            width: 400px;
-            margin-left: -200px;
-            text-align: center;
-            display: none;
-          }
+            #controls {
+                position: absolute;
+                bottom: 16px;
+                left: 50%;
+                width: 400px;
+                margin-left: -200px;
+                text-align: center;
+                display: none;
+            }
 
-          #controls > input[type=range] {
-              width: 400px;
-          }
+            #controls > input[type=range] {
+                width: 400px;
+            }
+
+            .notify-bar{
+                background-size: 40px 40px;                                
+                box-shadow: inset 0 -1px 0 rgba(255,255,255,.4);
+                width: 100%;
+                border: 1px solid;
+                color: #fff;
+                text-shadow: 0 1px 0 rgba(0,0,0,.5);
+                background-color: #3f4646;
+                border-color: #3f4646;
+                padding: 5px;
+            }
+
+            .notify-bar-height {
+                height: 0;
+                -webkit-transition: height 0.5s ease;
+                -moz-transition: height 0.5s ease;
+                -o-transition: height 0.5s ease;
+                -ms-transition: height 0.5s ease;
+                transition: height 0.5s ease;
+            }
+            .notify-bar-height-change {
+                height: 20px;
+            }
         </style>
     </head>
     <body>
         <p id="demo"></p>
         <div id="main">
-          <div id="area"></div>
+            <div class="notify-bar notify-bar-height" style="display: none">Table of Contents Loaded</div>
+            <div id="area"></div>
         </div>
 
         <script>
             var chapters = new String('');
-        /*
-            var controls = document.getElementById("controls");
-            var currentPage = document.getElementById("currentpg");
-            var totalPages = document.getElementById("totalpg");
-            var slider = document.createElement("input");
-            var pageList;
-            var slide = function(){
-                book.gotoPage(slider.value);
-            };
-            var throttledSlide = _.throttle(slide, 200);
-            var mouseDown = false;
-
-            var rendered = book.renderTo("area");
-
-            // Load in stored pageList from json or local storage
-            
-            EPUBJS.core.request("book:epub.js/examples/page_list.json").then(function(storedPageList){
-                pageList = storedPageList;
-                book.loadPagination(pageList);
-            });
-
-            // Or generate the pageList on the fly
-            book.ready.all.then(function(){
-                book.generatePagination();
-            });
-
-            // Wait for the pageList to be ready and then show slider
-            book.pageListReady.then(function(pageList){
-                controls.style.display = "block";
-                JSON.stringify(pageList); // Save the result
-                slider.setAttribute("type", "range");
-                slider.setAttribute("min", book.pagination.firstPage);
-                slider.setAttribute("max", book.pagination.lastPage);
-                slider.setAttribute("step", 1);
-                slider.setAttribute("value", 0);
-
-                slider.addEventListener("change", throttledSlide, false);
-                slider.addEventListener("mousedown", function(){
-                    mouseDown = true;
-                }, false);
-                slider.addEventListener("mouseup", function(){
-                    mouseDown = false;
-                }, false);
-
-                // Wait for book to be rendered to get current page
-                rendered.then(function(){
-                    var currentLocation = book.getCurrentLocationCfi();
-                    var currentPage = book.pagination.pageFromCfi(currentLocation);
-                    slider.value = currentPage;
-                    currentPage.value = currentPage;
-                });
-
-                controls.appendChild(slider);
-
-                totalPages.innerText = book.pagination.totalPages;
-                currentPage.addEventListener("change", function(){
-                    book.gotoPage(currentPage.value);
-                }, false);
-            });
-
-            book.on('book:pageChanged', function(location){
-                if(!mouseDown) {
-                    slider.value = location.anchorPage;
-                }
-                currentPage.value = location.anchorPage;
-            });*/
         </script>
     </body>
 </html>
