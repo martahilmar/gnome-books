@@ -1,3 +1,22 @@
+/*
+ * GNOME Books is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * GNOME Books is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with GNOME Books; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * Author: Marta Milakovic <marta.milakovic@gmail.com>
+ *
+ */
+
 #include <string.h>
 
 #include <glib/gi18n.h>
@@ -18,8 +37,8 @@ struct _GbBookLinksPrivate {
 };
 
 enum {
-        PROP_0,
-        PROP_NAME
+    PROP_0,
+    PROP_NAME
 };
 
 enum {
@@ -69,8 +88,6 @@ emit_link_activated (GbBookLinks *self)
 static void
 schedule_emit_link_activated (GbBookLinks *self)
 {
-    /* jump through some hoops to avoid destroying in the middle
-       of a button release handler */
     if (self->priv->link_activated_id == 0) {
         self->priv->link_activated_id = g_idle_add ((GSourceFunc) emit_link_activated, self);
     }
@@ -94,7 +111,6 @@ gb_book_links_set_model (GbBookLinks *self)
 {
     GbBookLinksPrivate *priv = self->priv;
     
-    //priv->model = create_and_fill_model ();
     gtk_tree_view_set_model (GTK_TREE_VIEW (priv->tree_view), priv->model);
 }
 
