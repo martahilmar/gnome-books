@@ -16,9 +16,12 @@ path.js: Makefile path.js.in
 config.js: Makefile config.js.in
 	$(AM_V_GEN) $(do_subst) $(srcdir)/config.js.in > $@
 
-nodist_js_DATA =    \
-    path.js         \
-    config.js
+nodist_js_DATA =                        \
+    path.js                             \
+    config.js                           \
+    ../epub.js/build/epub.js            \
+    ../epub.js/examples/single.html
+
 
 CLEANFILES +=       \
     $(BUILT_SOURCES)

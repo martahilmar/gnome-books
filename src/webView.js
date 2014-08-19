@@ -53,13 +53,14 @@ const WebView = new Lang.Class ({
         this._loadBookButton = new Gtk.Button ({label: 'Load Book'});
         this._loadTocButton = new Gtk.Button ({label: 'Load Table of Contents'});
         this._loadTotalPageNum = new Gtk.Button ({label: 'Load Page Number'});
-
+        this._openBook = new Gtk.Button ({label: "Open a book"});
+        
         // WebKit preview
         this._webView = new GbPrivate.WebView();
-        this._webView.register_URI (this.web_view);
+        this._webView.register_URI (this._webView);
 
         this._loadBookButton.connect("clicked", Lang.bind (this, function () {
-            this._onLoadBook('/epub.js/reader/moby-dick/');
+            //this._onLoadBook('/epub.js/reader/moby-dick/');
         }));
 
         this._loadTocButton.connect("clicked", Lang.bind (this, function () {
@@ -69,6 +70,8 @@ const WebView = new Lang.Class ({
         this._loadTotalPageNum.connect("clicked", Lang.bind(this, function () {
             this._onLoadTotalPageNum ();
         }));
+
+        this._openBook.connect("clicked", Lang.bind (this, this._openBookClicked));
 
         let view = this._webView.get_view();
         // Settings
@@ -91,7 +94,8 @@ const WebView = new Lang.Class ({
 
         //this._grid.attach (view, 0, 0, 1, 1);
         //this._grid.attach (this.loadButton, 0, 1, 1, 1);
-        vbox.pack_start (this._loadBookButton, true, true, 0);
+        vbox.pack_start (this._openBook, true, true, 0);
+        //vbox.pack_start (this._loadBookButton, true, true, 0);
         vbox.pack_start (this._loadTocButton, true, true, 0);
         vbox.pack_start (this._loadTotalPageNum, true, true, 0);
         hbox.pack_start (vbox, false, false, 0);
@@ -154,6 +158,25 @@ const WebView = new Lang.Class ({
                         widget.destroy();
                     }));
             }));
+    },
+
+    _openBookClicked: function () {
+        var chooser = new Gtk.FileChooserDialog ({title: "Select a book",
+                                              action: Gtk.FileChooserAction.OPEN,
+                                              modal: true});
+        chooser.add_button (Gtk.STOCK_CANCEL, 0);
+        chooser.add_button (Gtk.STOCK_OPEN, 1);
+        chooser.set_default_response (1);
+        
+        if (chooser.run () == 1)
+        {
+            var path = (chooser.get_uri ()).split("file://").pop();
+            path += "/";
+            this._onLoadBook(path);
+            log(path);
+        }
+        
+        chooser.destroy ();
     }
 });
 
@@ -226,7 +249,7 @@ const ReadNavControls = new Lang.Class({
         this.next_widget.connect('clicked', Lang.bind(this, this._onNextClicked));
         this.next_widget.connect('enter-notify-event', Lang.bind(this, this._onEnterNotify));
         this.next_widget.connect('leave-notify-event', Lang.bind(this, this._onLeaveNotify));
-        
+
         this._overlay.connect('motion-notify-event', Lang.bind(this, this._onMotion))
         
         this._webView.connect('move-cursor', Lang.bind(this,

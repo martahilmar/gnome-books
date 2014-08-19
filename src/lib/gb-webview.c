@@ -128,13 +128,9 @@ gb_request_cb (WebKitURISchemeRequest *request,
     printf("Path: %s \n", path);
 
     if (!path || path[0] == '\0') {
-        file = g_file_new_for_path ("epub.js/examples/single.html");
+        file = g_file_new_for_path ("/usr/local/share/books/js/single.html");
     } else {
-        gchar *dir = g_get_current_dir ();
-        gchar *fn = g_build_filename (dir, path, NULL);
-        file = g_file_new_for_path (fn);
-        g_free (dir);
-        g_free (fn);
+        file = g_file_new_for_path (path);
     }
 
     GFileInputStream *strm = g_file_read (file, NULL, &error);
