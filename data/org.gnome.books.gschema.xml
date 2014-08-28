@@ -1,5 +1,10 @@
 <schemalist gettext-domain="gnome-books">
   <schema id="org.gnome.books" path="/org/gnome/books/">
+    <key name="view-as" enum="org.gnome.Books.GdMainViewType">
+      <default>'icon'</default>
+      <summary>View as</summary>
+      <description>View as type</description>
+    </key>
     <key name="window-size" type="ai">
       <default>[768, 600]</default>
       <summary>Window size</summary>

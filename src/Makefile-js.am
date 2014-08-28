@@ -3,8 +3,14 @@ dist_js_DATA =      \
     application.js  \
     main.js         \
     mainWindow.js   \
+    windowMode.js   \
     webView.js      \
+    mainToolbar.js  \
     contents.js     \
+    view.js         \
+    embed.js        \
+    library.js      \
+    manager.js      \
     utils.js
 
 BUILT_SOURCES +=    \

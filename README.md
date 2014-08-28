@@ -16,6 +16,7 @@ The idea is to integrate Books with an existing online eBook store.
     $ ./autogen
     $ make
     $ sudo make install
+    $ cd src/ && glib-compile-resources gnome-books.gresource.xml
     $ export LD_LIBRARY_PATH=`pwd`/src/.libs:$LD_LIBRARY_PATH
     $ export GI_TYPELIB_PATH=`pwd`/src
 

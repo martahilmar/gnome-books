@@ -21,6 +21,7 @@ imports.gi.versions.Gtk = '3.0';
 imports.gi.versions.WebKit2 = '3.0';
 
 const Gtk = imports.gi.Gtk;
+const Gd = imports.gi.Gd;
 const Gio = imports.gi.Gio;
 const Gdk = imports.gi.Gdk;
 const GLib = imports.gi.GLib;
@@ -30,48 +31,28 @@ const Lang = imports.lang;
 const Mainloop = imports.mainloop;
 const Tweener = imports.tweener.tweener;
 
+const _ = imports.gettext.gettext;
+
 const Application = imports.application;
 const Contents = imports.contents;
+const MainToolbar = imports.mainToolbar;
+const WindowMode = imports.windowMode;
 const GbPrivate = imports.gi.GbPrivate;
 
 const WebView = new Lang.Class ({
     Name: 'WebView',
 
-    _init: function (app, overlay) {
-        this.view = this._initView(app, overlay);
+    _init: function (overlay) {
+        this.view = this._initView(overlay);
     },
 
-    _initView: function(app, overlay) {
-
+    _initView: function(overlay) {
+        this._model = false;
+        this.navControls = null;
         this._overlay = overlay;
-        this._bookLoaded = false;
-        //this._grid = new Gtk.Grid();
+        this._webView = Application.webView;
 
-        var hbox = new Gtk.Box ({orientation: Gtk.Orientation.VERTICAL, spacing: 5});
-        var vbox = new Gtk.Box ({orientation: Gtk.Orientation.HORIZONTAL, spacing: 5});
-
-        this._loadBookButton = new Gtk.Button ({label: 'Load Book'});
-        this._loadTocButton = new Gtk.Button ({label: 'Load Table of Contents'});
-        this._loadTotalPageNum = new Gtk.Button ({label: 'Load Page Number'});
-        this._openBook = new Gtk.Button ({label: "Open a book"});
-        
-        // WebKit preview
-        this._webView = new GbPrivate.WebView();
-        this._webView.register_URI (this._webView);
-
-        this._loadBookButton.connect("clicked", Lang.bind (this, function () {
-            //this._onLoadBook('/epub.js/reader/moby-dick/');
-        }));
-
-        this._loadTocButton.connect("clicked", Lang.bind (this, function () {
-            this._onLoadPagination ();
-        }));
-
-        this._loadTotalPageNum.connect("clicked", Lang.bind(this, function () {
-            this._onLoadTotalPageNum ();
-        }));
-
-        this._openBook.connect("clicked", Lang.bind (this, this._openBookClicked));
+        this.widget = new Gtk.Box ({orientation: Gtk.Orientation.VERTICAL, spacing: 5});
 
         let view = this._webView.get_view();
         // Settings
@@ -86,41 +67,31 @@ const WebView = new Lang.Class ({
         this.bar_widget = new GbPrivate.NavBar({ margin: _PREVIEW_NAVBAR_MARGIN,
                                                  valign: Gtk.Align.END,
                                                  opacity: 0 });
-
-        this._navControls = new ReadNavControls(this._webView, this._overlay, this.bar_widget);
-
+        
         let showContents = Application.application.lookup_action('show-contents');
-        showContents.connect('activate', Lang.bind(this, this._showContents));
+        showContents.connect('activate', Lang.bind(this, this.showContents));
 
-        //this._grid.attach (view, 0, 0, 1, 1);
-        //this._grid.attach (this.loadButton, 0, 1, 1, 1);
-        vbox.pack_start (this._openBook, true, true, 0);
-        //vbox.pack_start (this._loadBookButton, true, true, 0);
-        vbox.pack_start (this._loadTocButton, true, true, 0);
-        vbox.pack_start (this._loadTotalPageNum, true, true, 0);
-        hbox.pack_start (vbox, false, false, 0);
-        hbox.pack_start (view, true, true, 0);
-        vbox.set_homogeneous(true);
-        this._overlay.add(hbox);
-
-        this._overlay.show_all();
+        this.widget.pack_start (view, true, true, 0);
     },
 
-    _onLoadBook: function(path) {
-        if (!this._bookLoaded)
-        {
-            this._bookLoaded = true;
-            this._webView.run_JS ("var Book = ePub('" + path + "', { width: 1076, height: 588 });");
-            this._webView.run_JS ("var rendered = Book.renderTo('area');");
-            // Load Table of Contents
-            this._webView.run_JS ("Book.getToc().then(function(toc) {                               \
-                                        toc.forEach(function(chapter) {                             \
-                                            chapters += '%' + chapter.label + '=' + chapter.href;   \
-                                        }); });"); 
-        }
+    buildNavControls: function() {
+        this.navControls = new ReadNavControls(this._webView, this._overlay, this.bar_widget);
     },
 
-    _onLoadPagination: function() {
+    onLoadBook: function(path) {
+        if(this.bar_widget.get_total_pages() == 1)
+            this.navControls.hide();
+
+        this._webView.run_JS ("var Book = ePub('" + path + "', { version: 1, width: 1076, height: 588 });");
+        this._webView.run_JS ("document.getElementById('area').innerHTML = ''; var rendered = Book.renderTo('area');");
+        // Load Table of Contents
+        this._webView.run_JS ("Book.getToc().then(function(toc) {                               \
+                                    toc.forEach(function(chapter) {                             \
+                                        chapters += '%' + chapter.label + '=' + chapter.href;   \
+                                    }); });");
+    },
+
+    onLoadPagination: function() {
         this._webView.run_JS ("Book.ready.all.then(function(){ Book.generatePagination();           \
                                 Book.pageListReady.then(function(pageList) {                        \
                                     $('.notify-bar').show().addClass('notify-bar-height-change');   \
@@ -136,23 +107,23 @@ const WebView = new Lang.Class ({
         */
     },
 
-    _onLoadTotalPageNum: function() {
+    onLoadTotalPageNum: function() {
         this._webView.run_JS_return ("(Book.pagination.totalPages).toString();", Lang.bind(this,
             function(src, res) {
                 var n_pages = this._webView.output_JS_finish(res);
                 this.bar_widget.set_total_pages(n_pages);
                 this.bar_widget.set_current_page(1);
-                this._navControls.show();
+                this.navControls.show();
             }));
     },
 
-    _showContents: function() {
+    showContents: function() {
         let toc;
         this._webView.run_JS_return("function x() { return chapters } x();", Lang.bind(this,
             function(src, res) {
                 toc = this._webView.output_JS_finish(res);
 
-                let dialog = new Contents.ContentsDialog(toc, this._navControls);
+                let dialog = new Contents.ContentsDialog(toc, this.navControls);
                 dialog.widget.connect('response', Lang.bind(this,
                     function(widget, response) {
                         widget.destroy();
@@ -160,24 +131,20 @@ const WebView = new Lang.Class ({
             }));
     },
 
-    _openBookClicked: function () {
-        var chooser = new Gtk.FileChooserDialog ({title: "Select a book",
-                                              action: Gtk.FileChooserAction.OPEN,
-                                              modal: true});
-        chooser.add_button (Gtk.STOCK_CANCEL, 0);
-        chooser.add_button (Gtk.STOCK_OPEN, 1);
-        chooser.set_default_response (1);
-        
-        if (chooser.run () == 1)
+    setReadModel: function(model) {
+        if(!model)
         {
-            var path = (chooser.get_uri ()).split("file://").pop();
-            path += "/";
-            this._onLoadBook(path);
-            log(path);
+            this.bar_widget.set_total_pages(0);
+            this.bar_widget.set_current_page(1);
+            this._model = model;
+            if(this.navControls)
+                this.navControls.hide();
         }
-        
-        chooser.destroy ();
-    }
+    },
+
+    getModel: function() {
+        return this._model;
+    },
 });
 
 const _PREVIEW_NAVBAR_MARGIN = 30;
@@ -317,7 +284,8 @@ const ReadNavControls = new Lang.Class({
             return;
         }
 
-        this._fadeInButton(this.bar_widget);
+        if (n_pages > 1)
+            this._fadeInButton(this.bar_widget);
 
         if (c_page > 1)
             this._fadeInButton(this.prev_widget);
@@ -327,7 +295,7 @@ const ReadNavControls = new Lang.Class({
         if (n_pages > c_page + 1)
             this._fadeInButton(this.next_widget);
         else
-        this._fadeOutButton(this.next_widget);
+            this._fadeOutButton(this.next_widget);
 
         if (!this._hover)
             this._queueAutoHide();
@@ -394,5 +362,84 @@ const ReadNavControls = new Lang.Class({
                 var page = this._webView.output_JS_finish(res);
                 this.bar_widget.update_page(page);
             }));
+    }
+});
+
+const ReadToolbar = new Lang.Class({
+    Name: 'ReadToolbar',
+    Extends: MainToolbar.MainToolbar,
+
+    _init: function(webView) {
+        this._webView = webView;
+
+        this.parent();
+        this.toolbar.set_show_close_button(true);
+        
+        this._gearMenu = Application.application.lookup_action('gear-menu');
+        this._gearMenu.enabled = true;
+
+        // back button, on the left of the toolbar
+        let backButton = this.addBackButton();
+        backButton.connect('clicked', Lang.bind(this,
+            function() {
+                Application.modeController.setWindowMode(WindowMode.WindowMode.OVERVIEW);
+            }));
+
+        let loadTotalPages = new Gtk.Button({ image: new Gtk.Image ({ icon_name: 'document-page-setup-symbolic' }),
+                                              tooltip_text: _("Load Total Pages") });
+        this.toolbar.pack_end(loadTotalPages);
+        loadTotalPages.connect("clicked", Lang.bind(this, function () {
+            this._webView.onLoadTotalPageNum();
+        }));
+
+        let loadTOC = new Gtk.Button({ image: new Gtk.Image ({ icon_name: 'view-paged-symbolic' }),
+                                        tooltip_text: _("Load Table of Contents") });
+        this.toolbar.pack_end(loadTOC);
+        loadTOC.connect("clicked", Lang.bind(this, function () {
+            this._webView.onLoadPagination();
+        }));
+
+        // menu button, on the right of the toolbar
+        let readMenu = this._getReadMenu();
+        //TODO: change icon: open-menu-symbolic
+        let menuButton = new Gtk.MenuButton({ image: new Gtk.Image ({ icon_name: 'emblem-system-symbolic' }),
+                                              menu_model: readMenu,
+                                              action_name: 'app.gear-menu' });
+        this.toolbar.pack_end(menuButton);
+
+        this._setToolbarTitle();
+        this.toolbar.show_all();
+    },
+/*
+    _onLoadBook: function() {
+        var chooser = new Gtk.FileChooserDialog ({ title: "Select a book",
+                                                   action: Gtk.FileChooserAction.OPEN,
+                                                   modal: true });
+        chooser.add_button (Gtk.STOCK_CANCEL, 0);
+        chooser.add_button (Gtk.STOCK_OPEN, 1);
+        chooser.set_default_response (1);
+        
+        if (chooser.run () == 1)
+        {
+            var path = (chooser.get_uri ()).split("file://").pop();
+            path += "/";
+            this._webView.onLoadBook(path);
+            log(path);
+        }
+        
+        chooser.destroy ();
+    },
+*/
+    _getReadMenu: function() {
+        let builder = new Gtk.Builder();
+        builder.add_from_resource('/org/gnome/books/read-menu.ui');
+
+        let menu = builder.get_object('read-menu');
+        return menu;
+    },
+
+    _setToolbarTitle: function() {
+        let activeBook = Application.baseManager.getActiveItem();
+        this.toolbar.set_title(activeBook.title.substring(0, activeBook.title.length - 1));
     }
 });

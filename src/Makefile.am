@@ -39,6 +39,16 @@ do_subst = sed -e 's|@abs_top_srcdir[@]|$(abs_top_srcdir)|g'      \
 include Makefile-lib.am
 include Makefile-js.am
 
+resource_files = $(shell $(GLIB_COMPILE_RESOURCES) gnome-books.gresource.xml)
+gnome-books.gresource: gnome-books.gresource.xml $(resource_files)
+  $(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --target=$@ --sourcedir=$(srcdir) $<
+EXTRA_DIST += gnome-books.gresource.xml $(resource_files)
+
+resourcedir = $(pkgdatadir)
+resource_DATA = gnome-books.gresource
+
+CLEANFILES += gnome-books.gresource
+
 girdir = $(datadir)/gir-1.0
 gir_DATA = $(INTROSPECTION_GIRS)
 
@@ -63,5 +73,9 @@ gnome-books: gnome-books.in
 
 CLEANFILES += gnome-books
 EXTRA_DIST += gnome-books.in
+
+dist_bin_SCRIPTS = epub-metadata.py     \
+                   epub-thumbnailer.py  \
+                   epub-unpack.sh
 
 -include $(top_srcdir)/git.mk

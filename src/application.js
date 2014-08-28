@@ -40,6 +40,9 @@ const Format = imports.format;
 const Path = imports.path;
 const Utils = imports.utils;
 const MainWindow = imports.mainWindow;
+const WindowMode = imports.windowMode;
+const Library = imports.library;
+const BaseManager = imports.manager;
 
 // used globally
 let application = null;
@@ -47,8 +50,10 @@ let application = null;
 // used by the application, but not by the search provider
 let modeController = null;
 let settings = null;
-
-const MINER_REFRESH_TIMEOUT = 60; /* seconds */
+let cssProvider = null;
+let library = null;
+let webView = null;
+let baseManager = null;
 
 const Application = new Lang.Class({
     Name: 'Application',
@@ -62,11 +67,35 @@ const Application = new Lang.Class({
         GLib.set_prgname('gnome-books');
         GLib.set_application_name(_("Books"));
 
-        this.parent({ application_id: 'org.gnome.Books' });
+        this.parent({ application_id: 'org.gnome.Books',
+                      inactivity_timeout: 12000 });
     },
 
     _onActionQuit: function() {
         this._mainWindow.window.destroy();
+    },
+
+    _onActionAbout: function() {
+        this._mainWindow.showAbout();
+    },
+
+    _onActionToggle: function(action) {
+        let state = action.get_state();
+        action.change_state(GLib.Variant.new('b', !state.get_boolean()));
+    },
+
+    _onActionViewAs: function(action, parameter) {
+        if (parameter.get_string()[0] != action.state.get_string()[0])
+            settings.set_value('view-as', parameter);
+    },
+
+    _viewAsCreateHook: function(action) {
+        settings.connect('changed::view-as', Lang.bind(this,
+            function() {
+                let state = settings.get_value('view-as');
+                if (state.get_string()[0] != action.state.get_string()[0])
+                    action.state = state;
+            }));
     },
 
     _initActions: function() {
@@ -113,21 +142,78 @@ const Application = new Lang.Class({
             }));
     },
 
+    _initAppMenu: function() {
+        let builder = new Gtk.Builder();
+        builder.add_from_resource('/org/gnome/books/app-menu.ui');
+
+        let menu = builder.get_object('app-menu');
+        this.set_app_menu(menu);
+    },
+
+    _themeChanged: function(gtkSettings) {
+        let screen = Gdk.Screen.get_default();
+
+        if (gtkSettings.gtk_theme_name == 'Adwaita') {
+            if (cssProvider == null) {
+                cssProvider = new Gtk.CssProvider();
+                let file = Gio.File.new_for_uri("resource:///org/gnome/books/Adwaita.css");
+                cssProvider.load_from_file(file);
+            }
+
+            Gtk.StyleContext.add_provider_for_screen(screen,
+                                                     cssProvider,
+                                                     Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+        } else if (cssProvider != null) {
+            Gtk.StyleContext.remove_provider_for_screen(screen, cssProvider);
+        }
+    },
+
     vfunc_startup: function() {
         this.parent();
         String.prototype.format = Format.format;
 
-        application = this;
-        settings = new Gio.Settings({ schema: 'org.gnome.books' });
+        let resource = Gio.Resource.load(Path.RESOURCE_DIR + '/gnome-books.gresource');
+        resource._register();
 
+        application = this;
+        settings = new Gio.Settings ({ schema: 'org.gnome.books' });
+
+        let gtkSettings = Gtk.Settings.get_default();
+        gtkSettings.connect('notify::gtk-theme-name', Lang.bind(this, this._themeChanged));
+        this._themeChanged(gtkSettings);
+
+        modeController = new WindowMode.ModeController();
+        library = new Library.Library();
+        baseManager = new BaseManager.BaseManager();
+
+        // WebKit preview
+        webView = new GbPrivate.WebView();
+        webView.register_URI(webView);
+        
         this._actionEntries = [
             { name: 'quit',
               callback: this._onActionQuit,
               accel: '<Primary>q' },
+            { name: 'about',
+            callback: this._onActionAbout },
+            { name: 'gear-menu',
+              callback: this._onActionToggle,
+              state: GLib.Variant.new('b', false),
+              accel: 'F10',
+              window_mode: WindowMode.WindowMode.READ_VIEW },
+            { name: 'view-as',
+              callback: this._onActionViewAs,
+              create_hook: this._viewAsCreateHook,
+              parameter_type: 's',
+              state: settings.get_value('view-as'),
+              window_mode: WindowMode.WindowMode.OVERVIEW },            
+            { name: 'properties',
+              window_mode: WindowMode.WindowMode.READ_VIEW },
             { name: 'show-contents'}
         ];
 
         this._initActions();
+        this._initAppMenu();
     },
 
     vfunc_shutdown: function() {
@@ -138,9 +224,11 @@ const Application = new Lang.Class({
         if (this._mainWindow)
             return;
 
-        this._mainWindow = new MainWindow.MainWindow(this);
-        this._mainWindow.window.connect('destroy', Lang.bind(this, this._onWindowDestroy));
         this._connectActionsToMode();
+        this._mainWindow = new MainWindow.MainWindow(this);
+        this.emit("window-created");
+
+        this._mainWindow.window.connect('destroy', Lang.bind(this, this._onWindowDestroy));
     },
 
     vfunc_dbus_register: function(connection, path) {
@@ -154,12 +242,39 @@ const Application = new Lang.Class({
 
     vfunc_activate: function() {
         if (!this._mainWindow)
+        {
             this._createWindow();
+            modeController.setWindowMode(WindowMode.WindowMode.OVERVIEW);
+        }
+
+        this._mainWindow.window.present_with_time(this._activationTimestamp);
+        this._activationTimestamp = Gdk.CURRENT_TIME;
+    },
+
+    _clearState: function() {
+        // clean up signals
+        modeController.disconnectAll();
+        library.disconnectAll();
+
+        // reset state
+        modeController.setWindowMode(WindowMode.WindowMode.NONE);
     },
 
     _onWindowDestroy: function(window) {
         this._mainWindow = null;
+        Mainloop.idle_add(Lang.bind(this, this._clearState));
+    },
+
+    getScaleFactor: function() {
+        return this._mainWindow.window.get_scale_factor();
+    },
+
+    getGdkWindow: function() {  
+        return this._mainWindow.window.get_window();
+    },
+
+    getWebView: function() {
+        return webView;
     }
 });
-
 Utils.addSignalMethods(Application.prototype);

@@ -28,6 +28,8 @@ const Application = imports.application;
 const WebView = imports.webView;
 const Config = imports.config;
 const Utils = imports.utils;
+const MainToolbar = imports.mainToolbar;
+const Embed = imports.embed;
 
 const _ = imports.gettext.gettext;
 
@@ -43,30 +45,28 @@ const MainWindow = new Lang.Class({
                                                   width_request: _WINDOW_MIN_WIDTH,
                                                   height_request: _WINDOW_MIN_HEIGHT,
                                                   window_position: Gtk.WindowPosition.CENTER,
-                                                  title: "GNOME Books" });
+                                                  title: _("GNOME Books") });
         this._initSignals();
         this._restoreWindowGeometry();
 
         this.window.set_events(Gdk.EventMask.POINTER_MOTION_MASK);
 
         this._configureId = 0;
-        this._widget = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL,
-                                    visible: true });
-        this._overlay = new Gtk.Overlay({ visible: true });
-        this._widget.pack_end(this._overlay, true, true, 0);
-
-        this.webView = new WebView.WebView(app, this._overlay);
-        this.window.add(this._widget);
-
+        
+        this._embed = new Embed.Embed();
+        this.window.add(this._embed.widget);
         this.window.show_all();
     },
 
     _initSignals: function() {
-        this.window.connect('delete-event', this._quit.bind(this));
+        this.window.connect('delete-event', 
+                             Lang.bind(this, this._quit));
         this.window.connect('configure-event',
-                            this._onConfigureEvent.bind(this));
+                             Lang.bind(this, this._onConfigureEvent));
         this.window.connect('window-state-event',
-                            this._onWindowStateEvent.bind(this));
+                             Lang.bind(this, this._onWindowStateEvent));
+        this.window.connect('key-press-event',
+                            Lang.bind(this, this._onKeyPressEvent));
     },
 
     _saveWindowGeometry: function() {
@@ -130,13 +130,40 @@ const MainWindow = new Lang.Class({
         Application.settings.set_boolean('window-maximized', maximized);
     },
 
+    _onKeyPressEvent: function(widget, event) {
+        let toolbar = this._embed.getMainToolbar();
+
+        return false;
+    },
+
     _quit: function() {
-        if (this._configureId !== 0) {
+        if (this._configureId != 0) {
             Mainloop.source_remove(this._configureId);
             this._configureId = 0;
         }
 
         this._saveWindowGeometry();
         return false;
+    },
+
+    showAbout: function() {
+        let aboutDialog = new Gtk.AboutDialog();
+
+        aboutDialog.authors = [ 'Marta Milakovic <marta.milakovic@gmail.com>',
+                                'Cosimo Cecchi <cosimoc@gnome.org>' ];
+        aboutDialog.program_name = _("Books");
+        aboutDialog.comments = _("A eBook manager application");
+        aboutDialog.license_type = Gtk.License.GPL_2_0;
+        aboutDialog.logo_icon_name = 'gnome-books';
+        aboutDialog.version = Config.PACKAGE_VERSION;
+        aboutDialog.wrap_license = true;
+
+        aboutDialog.modal = true;
+        aboutDialog.transient_for = this.window;
+
+        aboutDialog.show();
+        aboutDialog.connect('response', function() {
+            aboutDialog.destroy();
+        });
     }
 });

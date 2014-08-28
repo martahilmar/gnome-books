@@ -15,7 +15,7 @@
         <style type="text/css">
 
             body {
-
+                overflow: hidden;
             }
 
             #main {
@@ -34,20 +34,6 @@
 
             #area iframe {
                 border: none;
-            }
-
-            #controls {
-                position: absolute;
-                bottom: 16px;
-                left: 50%;
-                width: 400px;
-                margin-left: -200px;
-                text-align: center;
-                display: none;
-            }
-
-            #controls > input[type=range] {
-                width: 400px;
             }
 
             .notify-bar{
@@ -75,8 +61,8 @@
             }
         </style>
     </head>
+    
     <body>
-        <p id="demo"></p>
         <div id="main">
             <div class="notify-bar notify-bar-height" style="display: none">Table of Contents Loaded</div>
             <div id="area"></div>

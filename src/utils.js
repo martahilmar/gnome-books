@@ -20,6 +20,7 @@
  */
 
 const Gdk = imports.gi.Gdk;
+const Gd = imports.gi.Gd;
 const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
@@ -36,6 +37,38 @@ let debugInit = false;
 let debugEnabled = false;
 
 let _iconStore = {};
+
+function getIconSize() {
+    let viewType = Application.settings.get_enum('view-as');
+
+    if (viewType == Gd.MainViewType.LIST)
+        return _LIST_VIEW_SIZE;
+    else
+        return _ICON_VIEW_SIZE;
+}
+
+function getThumbnailFrameBorder() {
+    let viewType = Application.settings.get_enum('view-as');
+    let slice = new Gtk.Border();
+    let border = null;
+
+    slice.top = 3;
+    slice.right = 3;
+    slice.bottom = 6;
+    slice.left = 4;
+
+    if (viewType == Gd.MainViewType.LIST) {
+        border = new Gtk.Border();
+        border.top = 1;
+        border.right = 1;
+        border.bottom = 3;
+        border.left = 2;
+    } else {
+        border = slice.copy();
+    }
+
+    return [ slice, border ];
+}
 
 function debug(str) {
     if (!debugInit) {
