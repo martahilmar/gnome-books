@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/gnome/books">
+    <file alias="Adwaita.css">resources/Adwaita.css</file>
+    <file alias="app-menu.ui" preprocess="xml-stripblanks">resources/app-menu.ui</file>
+    <file alias="read-menu.ui" preprocess="xml-stripblanks">resources/read-menu.ui</file>
+   <file alias="thumbnail-frame.png" preprocess="to-pixdata">resources/thumbnail-frame.png</file>
+  </gresource>
+</gresources>
