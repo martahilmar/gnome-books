@@ -25,7 +25,6 @@ const MainToolbar = imports.mainToolbar;
 const WindowMode = imports.windowMode;
 const View = imports.view;
 const WebView = imports.webView;
-const ViewMenu = imports.menu;
 
 const GbPrivate = imports.gi.GbPrivate;
 const Gd = imports.gi.Gd;
@@ -59,9 +58,6 @@ const Embed = new Lang.Class({
         this._stackOverlay.add(this._stack);
 
         // now create the actual content widgets
-        this._menu = new ViewMenu.ViewMenu();
-        this._stack.add_named(this._menu.widget, 'menu');
-
         this._view = new View.ViewContainer();
         this._stack.add_named(this._view.widget, 'view');
 
@@ -87,9 +83,6 @@ const Embed = new Lang.Class({
 
     _onWindowModeChanged: function(object, newMode, oldMode) {
         switch (newMode) {
-        case WindowMode.WindowMode.MENU_VIEW:
-            this._prepareForMenuView();
-            break;
         case WindowMode.WindowMode.OVERVIEW:
             this._prepareForOverview();
             break;

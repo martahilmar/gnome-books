@@ -28,9 +28,8 @@ const Application = imports.application;
 
 const WindowMode = {
     NONE: 0,
-    MENU_VIEW: 1,
-    OVERVIEW: 2,
-    READ_VIEW: 3
+    OVERVIEW: 1,
+    READ_VIEW: 2
 };
 
 const ModeController = new Lang.Class({
