@@ -1,0 +1,16 @@
+<interface>
+  <menu id="read-menu">
+    <section id="open-section">
+      <item>
+        <attribute name="action">app.open-current</attribute>
+        <attribute name="label" translatable="yes">Open</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="action">app.properties</attribute>
+        <attribute name="label" translatable="yes">Properties</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

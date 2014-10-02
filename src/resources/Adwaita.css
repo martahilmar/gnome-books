@@ -1,0 +1,102 @@
+@define-color documents_emblem_bg #3465a4;
+@define-color documents_collection_bg #d3d7cf;
+@define-color theme_base_color #ffffff;
+@define-color theme_bg_color #ededed;
+@define-color theme_selected_bg_color #4a90d9;
+@define-color borders #a7aba7;
+@define-color entry_tag_bg #3465a4;
+@define-color entry_tag_fg @theme_base_color;
+
+GdMainIconView.content-view {
+    -GdMainIconView-icon-size: 40;
+}
+
+/* Make spinner visible on both dark and bright backgrounds w/o making
+ * it look ugly/weird.
+ */
+GdMainIconView.content-view.cell:active {
+    color: gray;
+}
+
+.documents-load-more.button {
+    border-image: none;
+    border-color: @borders;
+    border-width: 1px 0 0;
+    border-radius: 0;
+}
+
+.documents-scrolledwin.frame {
+    border-width: 1px 0 0;
+    border-radius: 0;
+}
+
+.documents-icon-bg {
+    background-color: @documents_emblem_bg;
+    border-radius: 4px;
+
+    color: @theme_base_color;
+}
+
+.documents-collection-icon {
+    background-color: @documents_collection_bg;
+    border-radius: 8px;
+}
+
+.documents-counter {
+    background-image: url("dnd-counter.svg");
+    background-size: contain;
+    background-color: transparent;
+    color: @theme_base_color;
+    font: bold;
+}
+
+.documents-favorite.button:active,
+.documents-favorite.button:active:hover {
+    color: shade(@theme_selected_bg_color, 1.20);
+}
+
+.documents-entry-tag {
+    background-color: @entry_tag_bg;
+    color: @entry_tag_fg;
+
+    border-radius: 4px;
+    border-width: 0;
+
+    margin: 2px;
+    padding: 4px;
+}
+
+.documents-entry-tag:hover {
+    background-color: shade(@entry_tag_bg, 1.10);
+    color: @entry_tag_fg;
+}
+
+.documents-entry-tag.button,
+.documents-entry-tag.button:hover,
+.documents-entry-tag.button:active,
+.documents-entry-tag.button:active:hover {
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    border-image: none;
+    border-width: 0;
+}
+
+.documents-entry-tag.button:hover {
+    color: shade(@entry_tag_bg, 2.10);
+}
+
+.content-view.document-page {
+    border-style: solid;
+    border-width: 3px 3px 6px 4px;
+    border-image: url("thumbnail-frame.png") 3 3 6 4;
+}
+
+.osd .page-thumbnail {
+    border-style: solid;
+    border-width: 1px;
+    border-color: @osd_lowlight;
+
+    /* when there's no pixbuf yet */
+    background-color: @osd_bg;
+}
