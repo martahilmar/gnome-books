@@ -22,4 +22,6 @@ The idea is to integrate Books with an existing online eBook store.
 
 ## 2. Running GNOME Books
 
+Make a folder Books in your $home directory and add all the .epubs you would like to read.
+
     $ gnome-books
