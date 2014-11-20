@@ -41,7 +41,7 @@ include Makefile-js.am
 
 resource_files = $(shell $(GLIB_COMPILE_RESOURCES) gnome-books.gresource.xml)
 gnome-books.gresource: gnome-books.gresource.xml $(resource_files)
-  $(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --target=$@ --sourcedir=$(srcdir) $<
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --target=$@ --sourcedir=$(srcdir) $<
 EXTRA_DIST += gnome-books.gresource.xml $(resource_files)
 
 resourcedir = $(pkgdatadir)

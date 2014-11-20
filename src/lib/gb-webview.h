@@ -58,7 +58,8 @@ void            gb_webview_run_JS_return    	(GbWebView* self,
 					                         	 gchar*     load_command,
 					                         	 GAsyncReadyCallback callback,
 					                         	 gpointer user_data);
-gchar*        	gb_webview_output_JS_finish 	(GAsyncResult *res,
-                                             	 GError **error);
-
+char *
+gb_webview_output_JS_finish (GbWebView *self,
+                             GAsyncResult *res,
+                             GError **error);
 #endif /* __GB_WEBVIEW_H__ */

@@ -358,7 +358,7 @@ const ReadNavControls = new Lang.Class({
         this._webView.run_JS ("Book.goto('" + link + "');");
         this._webView.run_JS ("var currentLocation = Book.getCurrentLocationCfi();");
         this._webView.run_JS_return ("(Book.pagination.pageFromCfi(currentLocation)).toString();", Lang.bind(this,
-            function(src, res) {
+            function(src, res) {                
                 var page = this._webView.output_JS_finish(res);
                 this.bar_widget.update_page(page);
             }));

@@ -390,19 +390,20 @@ gb_webview_run_JS_return (GbWebView *self,
 
 /**
  * gb_webview_output_JS_finish:
+ * @self:
  * @res:
- * @error: (allow-none) (out):
- *
- * Returns: (transfer full):
+ * @error:
+ * Returns: (transfer full): a constant, free when you used it
  */
-gchar*
-gb_webview_output_JS_finish (GAsyncResult *res,
+char *
+gb_webview_output_JS_finish (GbWebView *self,
+                             GAsyncResult *res,
                              GError **error)
 {
-  if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (res), error))
+    if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (res), error))
     return NULL;
 
-  return g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (res));
+    return g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (res));
 }
 
 /**
