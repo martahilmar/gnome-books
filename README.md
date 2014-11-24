@@ -13,7 +13,7 @@ The idea is to integrate Books with an existing online eBook store.
 
 ## 1. Installing GNOME Books
 
-    $ ./autogen
+    $ ./autogen.sh
     $ make
     $ sudo make install
     $ cd src/ && glib-compile-resources gnome-books.gresource.xml
