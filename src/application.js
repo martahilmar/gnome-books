@@ -3,12 +3,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * GNOME Books is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with GNOME Books; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -24,7 +24,7 @@ const Gettext = imports.gettext;
 const _ = imports.gettext.gettext;
 
 // Import versions go here
-imports.gi.versions.WebKit = '3.0';
+imports.gi.versions.WebKit = '4.0';
 imports.gi.versions.Gtk = '3.0';
 
 const GbPrivate = imports.gi.GbPrivate;
@@ -189,13 +189,13 @@ const Application = new Lang.Class({
         // WebKit preview
         webView = new GbPrivate.WebView();
         webView.register_URI(webView);
-        
+
         this._actionEntries = [
             { name: 'quit',
               callback: this._onActionQuit,
               accel: '<Primary>q' },
             { name: 'about',
-            callback: this._onActionAbout },
+              callback: this._onActionAbout },
             { name: 'gear-menu',
               callback: this._onActionToggle,
               state: GLib.Variant.new('b', false),
@@ -206,7 +206,7 @@ const Application = new Lang.Class({
               create_hook: this._viewAsCreateHook,
               parameter_type: 's',
               state: settings.get_value('view-as'),
-              window_mode: WindowMode.WindowMode.OVERVIEW },            
+              window_mode: WindowMode.WindowMode.OVERVIEW },
             { name: 'properties',
               window_mode: WindowMode.WindowMode.READ_VIEW },
             { name: 'show-contents'}
@@ -269,7 +269,7 @@ const Application = new Lang.Class({
         return this._mainWindow.window.get_scale_factor();
     },
 
-    getGdkWindow: function() {  
+    getGdkWindow: function() {
         return this._mainWindow.window.get_window();
     },
 
@@ -277,4 +277,6 @@ const Application = new Lang.Class({
         return webView;
     }
 });
+
 Utils.addSignalMethods(Application.prototype);
+

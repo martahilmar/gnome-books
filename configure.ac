@@ -31,7 +31,7 @@ GOBJECT_INTROSPECTION_MIN_VERSION=1.31.6
 
 PKG_CHECK_MODULES(DEPEND, 												\
 	gtk+-3.0 >= $GTK_MIN_VERSION 										\
-	webkit2gtk-3.0 >= $WEBKIT2GTK_MIN_VERSION							\
+	webkit2gtk-4.0 >= $WEBKIT2GTK_MIN_VERSION							\
 	gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_MIN_VERSION		\
 	gjs-1.0)
 
