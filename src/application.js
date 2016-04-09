@@ -177,6 +177,7 @@ const Application = new Lang.Class({
 
         application = this;
         settings = new Gio.Settings ({ schema: 'org.gnome.books' });
+        this.ensure_directory();
 
         let gtkSettings = Gtk.Settings.get_default();
         gtkSettings.connect('notify::gtk-theme-name', Lang.bind(this, this._themeChanged));
@@ -218,6 +219,15 @@ const Application = new Lang.Class({
 
     vfunc_shutdown: function() {
         this.parent();
+    },
+
+    ensure_directory: function() {
+        /* Translators: "Recordings" here refers to the name of the directory where the application places files */
+        let path = GLib.build_filenamev([GLib.get_home_dir(), _("Books")]);
+
+        // Ensure Recordings directory
+        GLib.mkdir_with_parents(path, parseInt("0755", 8));
+        this.saveDir = Gio.file_new_for_path(path);
     },
 
     _createWindow: function() {
@@ -279,4 +289,3 @@ const Application = new Lang.Class({
 });
 
 Utils.addSignalMethods(Application.prototype);
-
