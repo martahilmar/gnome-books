@@ -4,7 +4,6 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-PKG_NAME="gnome-books"
 ACLOCAL_FLAGS="-I libgd ${ACLOCAL_FLAGS}"
 
 (test -f $srcdir/src/main.js) || {
