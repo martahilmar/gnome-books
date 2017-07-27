@@ -1,3 +1,6 @@
 [submodule "libgd"]
 	path = libgd
 	url = git://git.gnome.org/libgd
+[submodule "epub.js"]
+	path = epub.js
+	url = https://github.com/futurepress/epub.js.git

@@ -3,12 +3,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * GNOME Books is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with GNOME Books; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -24,7 +24,7 @@ const Gettext = imports.gettext;
 const _ = imports.gettext.gettext;
 
 // Import versions go here
-imports.gi.versions.WebKit = '3.0';
+imports.gi.versions.WebKit = '4.0';
 imports.gi.versions.Gtk = '3.0';
 
 const GbPrivate = imports.gi.GbPrivate;
@@ -177,6 +177,7 @@ const Application = new Lang.Class({
 
         application = this;
         settings = new Gio.Settings ({ schema: 'org.gnome.books' });
+        this.ensure_directory();
 
         let gtkSettings = Gtk.Settings.get_default();
         gtkSettings.connect('notify::gtk-theme-name', Lang.bind(this, this._themeChanged));
@@ -189,13 +190,13 @@ const Application = new Lang.Class({
         // WebKit preview
         webView = new GbPrivate.WebView();
         webView.register_URI(webView);
-        
+
         this._actionEntries = [
             { name: 'quit',
               callback: this._onActionQuit,
               accel: '<Primary>q' },
             { name: 'about',
-            callback: this._onActionAbout },
+              callback: this._onActionAbout },
             { name: 'gear-menu',
               callback: this._onActionToggle,
               state: GLib.Variant.new('b', false),
@@ -206,7 +207,7 @@ const Application = new Lang.Class({
               create_hook: this._viewAsCreateHook,
               parameter_type: 's',
               state: settings.get_value('view-as'),
-              window_mode: WindowMode.WindowMode.OVERVIEW },            
+              window_mode: WindowMode.WindowMode.OVERVIEW },
             { name: 'properties',
               window_mode: WindowMode.WindowMode.READ_VIEW },
             { name: 'show-contents'}
@@ -218,6 +219,15 @@ const Application = new Lang.Class({
 
     vfunc_shutdown: function() {
         this.parent();
+    },
+
+    ensure_directory: function() {
+        /* Translators: "Recordings" here refers to the name of the directory where the application places files */
+        let path = GLib.build_filenamev([GLib.get_home_dir(), _("Books")]);
+
+        // Ensure Recordings directory
+        GLib.mkdir_with_parents(path, parseInt("0755", 8));
+        this.saveDir = Gio.file_new_for_path(path);
     },
 
     _createWindow: function() {
@@ -269,7 +279,7 @@ const Application = new Lang.Class({
         return this._mainWindow.window.get_scale_factor();
     },
 
-    getGdkWindow: function() {  
+    getGdkWindow: function() {
         return this._mainWindow.window.get_window();
     },
 
@@ -277,4 +287,5 @@ const Application = new Lang.Class({
         return webView;
     }
 });
+
 Utils.addSignalMethods(Application.prototype);

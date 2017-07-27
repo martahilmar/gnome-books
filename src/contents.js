@@ -3,12 +3,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * GNOME Books is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with GNOME Books; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -18,7 +18,7 @@
  */
 
 imports.gi.versions.Gtk = '3.0';
-imports.gi.versions.WebKit2 = '3.0';
+imports.gi.versions.WebKit2 = '4.0';
 
 const Gtk = imports.gi.Gtk;
 const Gio = imports.gi.Gio;
@@ -48,8 +48,7 @@ const ContentsDialog = new Lang.Class({
                                         modal: true,
                                         destroy_with_parent: true,
                                         use_header_bar: true,
-                                        default_width: 600, // FIXME use toplevel size
-                                        default_height: 600,
+                                        default_height: 400,
                                         title: "",
                                         hexpand: true });
 
