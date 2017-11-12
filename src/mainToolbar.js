@@ -32,7 +32,7 @@ const Mainloop = imports.mainloop;
 
 const Application = imports.application;
 
-const MainToolbar = new Lang.Class ({
+var MainToolbar = new Lang.Class ({
 	Name: 'MainToolbar',
 
 	_init: function() {
@@ -55,7 +55,7 @@ const MainToolbar = new Lang.Class ({
 	}
 });
 
-const OverviewToolbar = new Lang.Class({
+var OverviewToolbar = new Lang.Class({
     Name: 'OverviewToolbar',
     Extends: MainToolbar,
 

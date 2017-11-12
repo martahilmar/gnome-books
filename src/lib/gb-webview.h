@@ -60,6 +60,6 @@ void            gb_webview_run_JS_return    	(GbWebView* self,
 					                         	 gpointer user_data);
 char *
 gb_webview_output_JS_finish (GbWebView *self,
-                             GAsyncResult *res,
-                             GError **error);
+                             GTask *res,
+                             GError *error);
 #endif /* __GB_WEBVIEW_H__ */

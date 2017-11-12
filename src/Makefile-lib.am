@@ -47,6 +47,6 @@ GbPrivate_1_0_gir_SCANNERFLAGS = --warn-all --symbol-prefix=gb --identifier-pref
 GbPrivate_1_0_gir_INCLUDES = \
   GObject-2.0 \
   Gtk-3.0 \
-  WebKit2-3.0
+  WebKit2-4.0
 GbPrivate_1_0_gir_FILES = $(introspection_sources)
 endif

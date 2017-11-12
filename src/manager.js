@@ -29,7 +29,7 @@ const Pango = imports.gi.Pango;
 const Lang = imports.lang;
 const Signals = imports.signals;
 
-const BaseManager = new Lang.Class({
+var BaseManager = new Lang.Class({
     Name: 'BaseManager',
 
     _init: function(title, actionId, context) {

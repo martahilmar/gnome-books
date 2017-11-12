@@ -39,7 +39,7 @@ G_DEFINE_TYPE (GbWebView, gb_webview, G_TYPE_OBJECT)
 
 struct _GbWebViewPrivate {
     WebKitWebView *webView;
-    GSimpleAsyncResult *result;
+    GTask *result;
 
     gchar* output_JS;
 };
@@ -317,17 +317,15 @@ gb_web_view_finished_JS      (GObject      *webView,
         JSStringRelease (js_str_value);
 
         self->priv->output_JS = strdup(str_value);
-        //g_print ("----------------- Script result: %s\n", self->priv->output_JS);
-
-        g_simple_async_result_set_op_res_gpointer (self->priv->result, self->priv->output_JS, NULL);
-        g_simple_async_result_complete_in_idle (self->priv->result);
+        g_task_return_pointer (self->priv->result, self->priv->output_JS, NULL);
+        g_task_get_completed (self->priv->result);
 
         g_free (str_value);
         g_object_unref (self->priv->result);
     } else {
         g_warning ("Error running javascript: unexpected return value");
-        g_simple_async_result_take_error (self->priv->result, error);
-        g_simple_async_result_complete_in_idle (self->priv->result);
+        g_task_return_error (self->priv->result, error);
+        g_task_get_completed (self->priv->result);
     }
     webkit_javascript_result_unref (js_result);
 }
@@ -381,11 +379,10 @@ gb_webview_run_JS_return (GbWebView *self,
                           GAsyncReadyCallback callback,
                           gpointer user_data)
 {
-    self->priv->result = g_simple_async_result_new (NULL, callback, user_data,
-                                                    gb_webview_run_JS_return);
+    self->priv->result = g_task_new (NULL, NULL, callback,
+                                     gb_webview_run_JS_return);
 
     webkit_web_view_run_javascript (self->priv->webView, load_command, NULL, gb_web_view_finished_JS, self);
-    
 }
 
 /**
@@ -397,13 +394,11 @@ gb_webview_run_JS_return (GbWebView *self,
  */
 char *
 gb_webview_output_JS_finish (GbWebView *self,
-                             GAsyncResult *res,
-                             GError **error)
+                             GTask *res,
+                             GError *error)
 {
-    if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (res), error))
-    return NULL;
-
-    return g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (res));
+    g_task_return_error (G_TASK (res), error);
+    return g_task_propagate_pointer (G_TASK (res), &error);
 }
 
 /**
@@ -417,7 +412,6 @@ WebKitWebView*
 gb_webview_new ()
 {
     GObject *self;
-
     self = g_object_new (GB_WEBVIEW_TYPE,
                          "books-view",
                          NULL);

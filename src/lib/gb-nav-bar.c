@@ -418,7 +418,6 @@ GtkWidget *
 gb_nav_bar_new ()
 {
   GObject *self;
-
   self = g_object_new (GB_TYPE_NAV_BAR,
                        "nav-bar",
                        "orientation", GTK_ORIENTATION_HORIZONTAL,

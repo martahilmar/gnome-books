@@ -36,7 +36,7 @@ const Application = imports.application;
 const WindowMode = imports.windowMode;
 const Utils = imports.utils;
 
-const Library = new Lang.Class({
+var Library = new Lang.Class({
 	Name: 'Library',
 
 	_init: function() {
@@ -76,8 +76,8 @@ const Library = new Lang.Class({
                 Application.application.getScaleFactor(),
                 Application.application.getGdkWindow());
 
-            let [otitle, title] = GLib.spawn_command_line_sync("epub-metadata.py " + this.path + " getTitle()", null);
-            let [oauthor, author] = GLib.spawn_command_line_sync("epub-metadata.py " + this.path + " getAuthor()", null);
+            let [otitle, title] = GLib.spawn_command_line_sync("epub-metadata.py " + this.path + " getTitle()");
+            let [oauthor, author] = GLib.spawn_command_line_sync("epub-metadata.py " + this.path + " getAuthor()");
 
             item = { icon: this.surface,
                      epubName: this.fileInfo.get_name(),

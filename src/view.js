@@ -36,7 +36,7 @@ const WindowMode = imports.windowMode;
 const Utils = imports.utils;
 const Signals = imports.signals;
 
-const ViewModel = new Lang.Class({
+var ViewModel = new Lang.Class({
     Name: 'ViewModel',
 
     _init: function() {
@@ -77,7 +77,7 @@ const ViewModel = new Lang.Class({
 });
 Signals.addSignalMethods(ViewModel.prototype);
 
-const ViewContainer = new Lang.Class({
+var ViewContainer = new Lang.Class({
     Name: 'ViewContainer',
 
     _init: function() {

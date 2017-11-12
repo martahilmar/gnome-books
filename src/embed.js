@@ -36,7 +36,7 @@ const _ = imports.gettext.gettext;
 
 const _ICON_SIZE = 128;
 
-const Embed = new Lang.Class({
+var Embed = new Lang.Class({
     Name: 'Embed',
 
     _init: function() {

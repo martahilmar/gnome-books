@@ -126,3 +126,38 @@ function loadStyleSheet(file) {
                                              provider,
                                              Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
+
+function populateActionGroup(actionGroup, actionEntries, prefix) {
+    actionEntries.forEach(function(actionEntry) {
+        let settingsKey = actionEntry.settingsKey;
+        let state = actionEntry.state;
+        let parameterType = actionEntry.parameter_type ?
+            GLib.VariantType.new(actionEntry.parameter_type) : null;
+        let action;
+
+        if (settingsKey) {
+            action = Application.settings.create_action(settingsKey);
+        } else {
+            if (state)
+                action = Gio.SimpleAction.new_stateful(actionEntry.name,
+                                                       parameterType, actionEntry.state);
+            else
+                action = new Gio.SimpleAction({ name: actionEntry.name,
+                                                parameter_type: parameterType });
+        }
+
+        if (actionEntry.create_hook)
+            actionEntry.create_hook(action);
+
+        if (actionEntry.callback)
+            action.connect('activate', actionEntry.callback);
+
+        if (actionEntry.stateChanged)
+            action.connect('notify::state', actionEntry.stateChanged);
+
+        if (actionEntry.accels)
+            Application.application.set_accels_for_action(prefix + '.' + action.name, actionEntry.accels);
+
+        actionGroup.add_action(action);
+    });
+}

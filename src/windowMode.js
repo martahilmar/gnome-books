@@ -26,13 +26,13 @@ const Signals = imports.signals;
 
 const Application = imports.application;
 
-const WindowMode = {
+var WindowMode = {
     NONE: 0,
     OVERVIEW: 1,
     READ_VIEW: 2
 };
 
-const ModeController = new Lang.Class({
+var ModeController = new Lang.Class({
     Name: 'ModeController',
 
     _init: function() {

@@ -24,7 +24,7 @@ const Gettext = imports.gettext;
 const _ = imports.gettext.gettext;
 
 // Import versions go here
-imports.gi.versions.WebKit = '3.0';
+imports.gi.versions.WebKit = '4.0';
 imports.gi.versions.Gtk = '3.0';
 
 const GbPrivate = imports.gi.GbPrivate;
@@ -45,21 +45,22 @@ const Library = imports.library;
 const BaseManager = imports.manager;
 
 // used globally
-let application = null;
+var application = null;
 
 // used by the application, but not by the search provider
-let modeController = null;
-let settings = null;
-let cssProvider = null;
-let library = null;
-let webView = null;
-let baseManager = null;
+var modeController = null;
+var settings = null;
+var cssProvider = null;
+var library = null;
+var webView = null;
+var baseManager = null;
 
-const Application = new Lang.Class({
+var Application = new Lang.Class({
     Name: 'Application',
     Extends: Gtk.Application,
 
     _init: function() {
+        this._actionEntries = [];
         this._activationTimestamp = Gdk.CURRENT_TIME;
 
         Gettext.bindtextdomain('gnome-books', Path.LOCALE_DIR);
@@ -95,36 +96,6 @@ const Application = new Lang.Class({
                 let state = settings.get_value('view-as');
                 if (state.get_string()[0] != action.state.get_string()[0])
                     action.state = state;
-            }));
-    },
-
-    _initActions: function() {
-        this._actionEntries.forEach(Lang.bind(this,
-            function(actionEntry) {
-                let state = actionEntry.state;
-                let parameterType = actionEntry.parameter_type ?
-                    GLib.VariantType.new(actionEntry.parameter_type) : null;
-                let action;
-
-                if (state)
-                    action = Gio.SimpleAction.new_stateful(actionEntry.name,
-                        parameterType, actionEntry.state);
-                else
-                    action = new Gio.SimpleAction({ name: actionEntry.name });
-
-                if (actionEntry.create_hook)
-                    actionEntry.create_hook.apply(this, [action]);
-
-                if (actionEntry.callback)
-                    action.connect('activate', Lang.bind(this, actionEntry.callback));
-
-                if (actionEntry.accel)
-                    this.add_accelerator(actionEntry.accel, 'app.' + actionEntry.name, null);
-
-                if (actionEntry.accels)
-                    this.set_accels_for_action('app.' + actionEntry.name, actionEntry.accels);
-
-                this.add_action(action);
             }));
     },
 
@@ -188,9 +159,9 @@ const Application = new Lang.Class({
 
         // WebKit preview
         webView = new GbPrivate.WebView();
-        webView.register_URI(webView);
+        //webView.load_uri(webView);
         
-        this._actionEntries = [
+        let actionEntries = [
             { name: 'quit',
               callback: this._onActionQuit,
               accel: '<Primary>q' },
@@ -212,8 +183,9 @@ const Application = new Lang.Class({
             { name: 'show-contents'}
         ];
 
-        this._initActions();
         this._initAppMenu();
+
+        Utils.populateActionGroup(this, actionEntries, 'app');
     },
 
     vfunc_shutdown: function() {

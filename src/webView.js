@@ -18,7 +18,7 @@
  */
  
 imports.gi.versions.Gtk = '3.0';
-imports.gi.versions.WebKit2 = '3.0';
+imports.gi.versions.WebKit2 = '4.0';
 
 const Gtk = imports.gi.Gtk;
 const Gd = imports.gi.Gd;
@@ -39,7 +39,7 @@ const MainToolbar = imports.mainToolbar;
 const WindowMode = imports.windowMode;
 const GbPrivate = imports.gi.GbPrivate;
 
-const WebView = new Lang.Class ({
+var WebView = new Lang.Class ({
     Name: 'WebView',
 
     _init: function (overlay) {
@@ -55,6 +55,7 @@ const WebView = new Lang.Class ({
         this.widget = new Gtk.Box ({orientation: Gtk.Orientation.VERTICAL, spacing: 5});
 
         let view = this._webView.get_view();
+        this._webView.register_URI();
         // Settings
         let s = view.get_settings();
         s.enable_javascript = true;
@@ -106,9 +107,9 @@ const WebView = new Lang.Class ({
             }));
         */
     },
-
+    
     onLoadTotalPageNum: function() {
-        this._webView.run_JS_return ("(Book.pagination.totalPages).toString();", Lang.bind(this,
+        this._webView.run_JS_return ("(Book.pagination.totalPages).toString()", Lang.bind(this,
             function(src, res) {
                 var n_pages = this._webView.output_JS_finish(res);
                 this.bar_widget.set_total_pages(n_pages);
@@ -150,7 +151,7 @@ const WebView = new Lang.Class ({
 const _PREVIEW_NAVBAR_MARGIN = 30;
 const _AUTO_HIDE_TIMEOUT = 2;
 
-const ReadNavControls = new Lang.Class({
+var ReadNavControls = new Lang.Class({
     Name: 'ReadNavControls',
 
     _init: function(webView, overlay, barWidget) {
@@ -365,7 +366,7 @@ const ReadNavControls = new Lang.Class({
     }
 });
 
-const ReadToolbar = new Lang.Class({
+var ReadToolbar = new Lang.Class({
     Name: 'ReadToolbar',
     Extends: MainToolbar.MainToolbar,
 

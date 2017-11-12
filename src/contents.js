@@ -18,7 +18,7 @@
  */
 
 imports.gi.versions.Gtk = '3.0';
-imports.gi.versions.WebKit2 = '3.0';
+imports.gi.versions.WebKit2 = '4.0';
 
 const Gtk = imports.gi.Gtk;
 const Gio = imports.gi.Gio;

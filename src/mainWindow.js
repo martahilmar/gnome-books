@@ -37,7 +37,7 @@ const _CONFIGURE_ID_TIMEOUT = 100; // msecs
 const _WINDOW_MIN_WIDTH = 1340;
 const _WINDOW_MIN_HEIGHT = 768;
 
-const MainWindow = new Lang.Class({
+var MainWindow = new Lang.Class({
     Name: 'MainWindow',
 
     _init: function(app) {
