@@ -25,3 +25,5 @@ The idea is to integrate Books with an existing online eBook store.
 Make a folder Books in your $home directory and add all the .epubs you would like to read.
 
     $ gnome-books
+When GNOME Books is running choose your eBook and press 'Load Table of Contents'. This will load the chapters and notify you when finished with the pop-up bar. Next you should click on 'Load Total Pages' and you are ready to enjoy your EBook. 
+(These steps should be removed in the future.)
