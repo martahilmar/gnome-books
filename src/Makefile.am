@@ -75,7 +75,6 @@ CLEANFILES += gnome-books
 EXTRA_DIST += gnome-books.in
 
 dist_bin_SCRIPTS = epub-metadata.py     \
-                   epub-thumbnailer.py  \
-                   epub-unpack.sh
+                   epub-thumbnailer.py
 
 -include $(top_srcdir)/git.mk

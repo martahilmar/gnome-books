@@ -99,7 +99,8 @@ var Embed = new Lang.Class({
     
     _onActiveItemChanged: function(manager, book) {
         let fName = book.epubName.substring(0, book.epubName.length - 5);
-        let cmd = "epub-unpack.sh " + book.path + " " + GLib.get_home_dir() + "/Books/" + fName;
+        fName = fName.replace(/\s/g, "-");
+        let cmd = "unzip -o '" + book.path + "' -d " + GLib.get_home_dir() + "/Books/" + fName;
         GLib.spawn_command_line_sync(cmd);
 
         this._read.onLoadBook(GLib.get_home_dir() + "/Books/" + fName + "/");
